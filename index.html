@@ -1,167 +1,465 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NYT Spelling Bee Solver & Word Unscrambler</title>
-    <!-- Loading the official standalone Play CDN framework for Tailwind CSS engine processing -->
-    <script src="https://jsdelivr.net"></script>
-    <style>
-        .honeycomb { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 260px; margin: 0 auto; }
-        .cell-input { width: 70px; height: 70px; text-align: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; border: 2px solid #e2e8f0; border-radius: 50%; outline: none; transition: all 0.2s; }
-        .cell-input:focus { border-color: #f59e0b; box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2); }
-        .center-cell { background-color: #fef3c7; border-color: #f59e0b; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta
+    name="description"
+    content="Enter seven letters to find possible Spelling Bee-style words that include the required center letter."
+  />
+  <title>Spelling Bee Solver & Word Finder</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .honeycomb {
+      display: grid;
+      grid-template-columns: repeat(3, 72px);
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .cell-input {
+      width: 72px;
+      height: 72px;
+      border: 2px solid #e2e8f0;
+      border-radius: 9999px;
+      outline: none;
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
+    }
+
+    .cell-input:focus {
+      border-color: #f59e0b;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
+    }
+
+    .center-cell {
+      background-color: #fef3c7;
+      border-color: #f59e0b;
+    }
+
+    .outer-cell {
+      background-color: #ffffff;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans min-h-screen flex flex-col">
 
-    <!-- AD PLACEMENT: TOP LEADERBOARD -->
-    <div class="w-full max-w-4xl mx-auto my-4 p-4 bg-gray-200 border border-gray-300 rounded text-center text-xs text-gray-500 tracking-wider shadow-sm">
-        ADVERTISEMENT - PLACEHOLDER FOR GOOGLE ADSENSE LEADERBOARD
+<body class="flex min-h-screen flex-col bg-gray-50 font-sans text-gray-800">
+  <div
+    class="mx-auto my-4 w-full max-w-4xl rounded border border-gray-300 bg-gray-200 p-4 text-center text-xs tracking-wider text-gray-500 shadow-sm"
+    aria-label="Advertisement placeholder"
+  >
+    ADVERTISEMENT — LEADERBOARD PLACEHOLDER
+  </div>
+
+  <div
+    id="dictStatus"
+    class="w-full border-b border-blue-100 bg-blue-50 py-1.5 text-center text-xs font-medium text-blue-700"
+    role="status"
+    aria-live="polite"
+  >
+    Loading word dictionary…
+  </div>
+
+  <main class="mx-auto grid w-full max-w-4xl flex-grow grid-cols-1 gap-6 px-4 py-6 md:grid-cols-3">
+    <section
+      class="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:col-span-1"
+      aria-labelledby="solver-heading"
+    >
+      <div>
+        <h1 id="solver-heading" class="mb-2 text-center text-2xl font-black tracking-tight text-amber-500">
+          Spelling Bee Solver
+        </h1>
+
+        <p class="mb-6 text-center text-sm text-gray-500">
+          Enter six outer letters and one mandatory center letter.
+        </p>
+
+        <div class="honeycomb mb-6" aria-label="Puzzle letter inputs">
+          <div aria-hidden="true"></div>
+
+          <input
+            id="letter1"
+            class="cell-input outer-letter outer-cell"
+            type="text"
+            maxlength="1"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="A"
+            aria-label="Outer letter 1"
+          />
+
+          <div aria-hidden="true"></div>
+
+          <input
+            id="letter2"
+            class="cell-input outer-letter outer-cell"
+            type="text"
+            maxlength="1"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="B"
+            aria-label="Outer letter 2"
+          />
+
+          <input
+            id="centerLetter"
+            class="cell-input center-cell"
+            type="text"
+            maxlength="1"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="★"
+            aria-label="Required center letter"
+            required
+          />
+
+          <input
+            id="letter3"
+            class="cell-input outer-letter outer-cell"
+            type="text"
+            maxlength="1"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="C"
+            aria-label="Outer letter 3"
+          />
+
+          <div aria-hidden="true"></div>
+
+          <input
+            id="letter4"
+            class="cell-input outer-letter outer-cell"
+            type="text"
+            maxlength="1"
+            inputmode="text"
+            autocomplete="off"
+            placeholder="D"
+            aria-label="Outer letter 4"
+          />
+
+          <div aria-hidden="true"></div>
+
+          <div class="col-span-3 flex justify-center gap-10 pt-2">
+            <input
+              id="letter5"
+              class="cell-input outer-letter outer-cell"
+              type="text"
+              maxlength="1"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="E"
+              aria-label="Outer letter 5"
+            />
+
+            <input
+              id="letter6"
+              class="cell-input outer-letter outer-cell"
+              type="text"
+              maxlength="1"
+              inputmode="text"
+              autocomplete="off"
+              placeholder="F"
+              aria-label="Outer letter 6"
+            />
+          </div>
+        </div>
+      </div>
+
+      <div
+        class="mt-4 flex h-48 w-full items-center justify-center rounded border border-gray-300 bg-gray-200 text-center text-xs tracking-wider text-gray-500"
+        aria-label="Advertisement placeholder"
+      >
+        ADVERTISEMENT — SQUARE BANNER
+      </div>
+
+      <button
+        id="solveBtn"
+        type="button"
+        disabled
+        class="mt-6 w-full cursor-not-allowed rounded-xl bg-gray-400 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md transition-colors"
+      >
+        Loading Dictionary…
+      </button>
+    </section>
+
+    <section
+      class="flex flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:col-span-2"
+      aria-labelledby="results-heading"
+    >
+      <h2 id="results-heading" class="mb-4 flex items-center gap-2 text-xl font-bold">
+        <span>🎯 Found Solutions</span>
+        <span
+          id="wordCount"
+          class="hidden rounded-full bg-gray-100 px-2 py-0.5 text-sm text-gray-600"
+        >
+          0 words
+        </span>
+      </h2>
+
+      <div
+        class="mb-4 w-full rounded border border-dashed border-gray-300 bg-gray-100 py-2 text-center text-xs tracking-wider text-gray-400"
+        aria-label="Advertisement placeholder"
+      >
+        IN-FEED NATIVE AD PLACEHOLDER
+      </div>
+
+      <div
+        id="resultsContainer"
+        class="max-h-[500px] flex-grow space-y-4 overflow-y-auto pr-2 italic text-gray-400"
+        aria-live="polite"
+      >
+        Enter seven unique puzzle letters and select “Find Words.”
+      </div>
+    </section>
+  </main>
+
+  <footer class="mt-12 border-t border-gray-200 bg-gray-100 px-4 py-8 text-sm text-gray-600">
+    <div class="mx-auto max-w-4xl">
+      <h3 class="mb-2 font-bold text-gray-800">About This Spelling Bee Word Finder</h3>
+
+      <p class="mb-4 leading-relaxed">
+        Enter six outer letters and a required center letter to find possible
+        English words made only from those letters. Every displayed word contains
+        the center letter and has at least four characters.
+      </p>
+
+      <p class="leading-relaxed">
+        Words that use all seven available letters are marked as pangrams.
+        Dictionary acceptance rules vary by puzzle, so this tool is best used as a
+        word-finding aid rather than an exact replica of a particular game’s word list.
+      </p>
     </div>
+  </footer>
 
-    <!-- DICTIONARY STATUS INDICATOR TOP BANNER -->
-    <div id="dictStatus" class="w-full text-center py-1.5 bg-blue-50 text-blue-700 text-xs font-medium border-b border-blue-100 transition-all duration-300">
-        ⏳ Initializing engine and downloading word arrays...
-    </div>
+  <script>
+    let masterDictionary = [];
 
-    <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
-        
-        <!-- LEFT COLUMN: CONTROLS & HONEYCOMB -->
-        <div class="md:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
-            <div>
-                <h1 class="text-2xl font-black text-amber-500 mb-2 tracking-tight text-center">Spelling Bee Solver</h1>
-                <p class="text-sm text-gray-500 text-center mb-6">Enter today's letters. The center letter is mandatory.</p>
-                
-                <!-- Honeycomb Input Grid Layout -->
-                <div class="honeycomb mb-6">
-                    <div></div>
-                    <input type="text" maxlength="1" class="cell-input outer-letter" id="letter1" placeholder="A">
-                    <div></div>
-                    <input type="text" maxlength="1" class="cell-input outer-letter" id="letter2" placeholder="B">
-                    <input type="text" maxlength="1" class="cell-input center-cell" id="centerLetter" placeholder="★" required>
-                    <input type="text" maxlength="1" class="cell-input outer-letter" id="letter3" placeholder="C">
-                    <div></div>
-                    <input type="text" maxlength="1" class="cell-input outer-letter" id="letter4" placeholder="D">
-                    <div></div>
-                    <div class="col-span-3 flex justify-between gap-2 mt-2">
-                        <input type="text" maxlength="1" class="cell-input outer-letter" id="letter5" placeholder="E">
-                        <input type="text" maxlength="1" class="cell-input outer-letter" id="letter6" placeholder="F">
-                    </div>
-                </div>
-            </div>
+    const dictionaryUrl =
+      "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
 
-            <!-- AD PLACEMENT: SIDEBAR UNIT -->
-            <div class="w-full h-48 bg-gray-200 border border-gray-300 rounded text-center text-xs text-gray-500 flex items-center justify-center tracking-wider mt-4">
-                ADVERTISEMENT - SQUARE BANNER
-            </div>
-            
-            <button id="solveBtn" onclick="solvePuzzle()" disabled class="w-full mt-6 bg-gray-400 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors uppercase tracking-wide cursor-not-allowed">
-                Loading Dictionary...
-            </button>
-        </div>
+    const statusBanner = document.getElementById("dictStatus");
+    const solveButton = document.getElementById("solveBtn");
+    const resultsContainer = document.getElementById("resultsContainer");
+    const wordCountBadge = document.getElementById("wordCount");
 
-        <!-- RIGHT COLUMN: RESULTS GRID -->
-        <div class="md:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col">
-            <h2 class="text-xl font-bold mb-4 flex items-center gap-2">
-                <span>🎯 Found Solutions</span>
-                <span id="wordCount" class="text-sm bg-gray-100 px-2 py-0.5 rounded-full text-gray-600 hidden">0 words</span>
-            </h2>
+    function normalizeLetter(value) {
+      return value.replace(/[^a-z]/gi, "").slice(0, 1).toUpperCase();
+    }
 
-            <!-- AD PLACEMENT: IN-LINE RESULTS AD -->
-            <div id="inlineAd" class="w-full py-2 mb-4 bg-gray-100 border border-dashed border-gray-300 rounded text-center text-xs text-gray-400 tracking-wider">
-                In-Feed Native Ad Placeholder
-            </div>
+    function setDictionaryStatus(type, message) {
+      const styles = {
+        loading: "w-full border-b border-blue-100 bg-blue-50 py-1.5 text-center text-xs font-medium text-blue-700",
+        success: "w-full border-b border-green-100 bg-green-50 py-1.5 text-center text-xs font-semibold text-green-700",
+        error: "w-full border-b border-red-100 bg-red-50 py-1.5 text-center text-xs font-bold text-red-700"
+      };
 
-            <div id="resultsContainer" class="flex-grow space-y-4 overflow-y-auto max-h-[500px] pr-2 text-gray-400 italic">
-                Enter your puzzle letters and press Unscramble to reveal valid structural words.
-            </div>
-        </div>
-    </main>
+      statusBanner.className = styles[type];
+      statusBanner.textContent = message;
+    }
 
-    <!-- SEO KEYWORD TEXT BLOCK - HELPS GOOGLE SEARCH BOT RANK THE PAGE -->
-    <footer class="bg-gray-100 border-t border-gray-200 py-8 px-4 mt-12 text-sm text-gray-600">
-        <div class="max-w-4xl mx-auto">
-            <h3 class="font-bold text-gray-800 mb-2">About Our NYT Spelling Bee Solver Tool</h3>
-            <p class="mb-4 leading-relaxed">
-                Welcome to the ultimate custom <strong>NYT Spelling Bee Solver</strong> and letter unscrambler app. If you are stuck trying to achieve the coveted Genius or Queen Bee status rankings on the daily New York Times puzzle, this solver will help you discover all hidden vocabulary words. 
-            </p>
-            <p class="leading-relaxed">
-                Simply enter the 6 outer letters and the core mandatory center letter into our interactive honeycomb solver layout matrix. Our engine scans an optimized array list of over 275,000 standard English words to instantly generate every single possible solution grouped completely by letter length, highlighting critical high-value game <strong>Pangrams</strong> automatically.
-            </p>
-        </div>
-    </footer>
+    async function loadGlobalDictionary() {
+      setDictionaryStatus("loading", "Loading word dictionary…");
 
-    <script>
-        // Production Grade Core Array State
-        let masterDictionary = [];
+      try {
+        const response = await fetch(dictionaryUrl);
 
-        // Fetch massive open source array list asynchronously on page load (275,000+ verified words)
-        async function loadGlobalDictionary() {
-            const dictionaryUrl = "https://raw.githubusercontent.com/words/an-array-of-english-words/refs/heads/master/index.json";
-            const statusBanner = document.getElementById('dictStatus');
-            const solveButton = document.getElementById('solveBtn');
-            
-            try {
-                const response = await fetch(dictionaryUrl);
-                if (!response.ok) throw new Error("Network latency failure");
-                
-                const rawWords = await response.json();
-                // Filter optimization: Only cache words that can legally fit standard Spelling Bee guidelines (4+ characters)
-                masterDictionary = rawWords.filter(word => word.length >= 4);
-                
-                statusBanner.className = "w-full text-center py-1.5 bg-green-50 text-green-700 text-xs font-semibold border-b border-green-100";
-                statusBanner.textContent = `✅ Global Dictionary Online! ${masterDictionary.length.toLocaleString()} game words indexed successfully.`;
-                
-                solveButton.disabled = false;
-                solveButton.className = "w-full mt-6 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors uppercase tracking-wide cursor-pointer";
-                solveButton.textContent = "Unscramble Words";
-            } catch (error) {
-                console.error(error);
-                statusBanner.className = "w-full text-center py-1.5 bg-red-50 text-red-700 text-xs font-bold border-b border-red-100";
-                statusBanner.textContent = "⚠️ Dictionary Download Failed. Refresh your browser profile page to retry.";
-            }
+        if (!response.ok) {
+          throw new Error(`Dictionary request failed: ${response.status}`);
         }
 
-        // Automatic focus advance script for faster keyboard user typing experiences
-        const inputs = Array.from(document.querySelectorAll('.cell-input'));
-        inputs.forEach((input, index) => {
-            input.addEventListener('input', (e) => {
-                if (e.target.value.length === 1 && index < inputs.length - 1) {
-                    inputs[index + 1].focus();
-                }
-            });
+        const rawText = await response.text();
+
+        masterDictionary = rawText
+          .split(/\r?\n/)
+          .map((word) => word.trim().toUpperCase())
+          .filter((word) => /^[A-Z]+$/.test(word))
+          .filter((word) => word.length >= 4);
+
+        if (masterDictionary.length === 0) {
+          throw new Error("The dictionary did not contain usable words.");
+        }
+
+        setDictionaryStatus(
+          "success",
+          `Dictionary ready — ${masterDictionary.length.toLocaleString()} words indexed.`
+        );
+
+        solveButton.disabled = false;
+        solveButton.className =
+          "mt-6 w-full cursor-pointer rounded-xl bg-amber-500 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md transition-colors hover:bg-amber-600";
+        solveButton.textContent = "Find Words";
+      } catch (error) {
+        console.error(error);
+
+        setDictionaryStatus(
+          "error",
+          "Dictionary download failed. Check your connection and refresh the page."
+        );
+
+        solveButton.textContent = "Dictionary Unavailable";
+      }
+    }
+
+    function getPuzzleLetters() {
+      const centerLetter = normalizeLetter(
+        document.getElementById("centerLetter").value
+      );
+
+      const outerLetters = Array.from(
+        document.querySelectorAll(".outer-letter")
+      )
+        .map((input) => normalizeLetter(input.value))
+        .filter(Boolean);
+
+      return {
+        centerLetter,
+        outerLetters,
+        allLetters: [centerLetter, ...outerLetters].filter(Boolean)
+      };
+    }
+
+    function renderMessage(message, colorClass = "text-gray-500") {
+      resultsContainer.innerHTML = `
+        <p class="${colorClass} not-italic font-medium">${message}</p>
+      `;
+      wordCountBadge.classList.add("hidden");
+    }
+
+    function isPangram(word, letterSet) {
+      const usedLetters = new Set(word);
+      return (
+        letterSet.size === 7 &&
+        usedLetters.size === 7 &&
+        [...letterSet].every((letter) => usedLetters.has(letter))
+      );
+    }
+
+    function solvePuzzle() {
+      const { centerLetter, outerLetters, allLetters } = getPuzzleLetters();
+
+      if (!centerLetter) {
+        renderMessage(
+          "The center letter is required.",
+          "text-red-500"
+        );
+        document.getElementById("centerLetter").focus();
+        return;
+      }
+
+      if (outerLetters.length !== 6) {
+        renderMessage(
+          "Please enter all six outer letters.",
+          "text-red-500"
+        );
+        return;
+      }
+
+      const letterSet = new Set(allLetters);
+
+      if (letterSet.size !== 7) {
+        renderMessage(
+          "Each of the seven puzzle letters must be unique.",
+          "text-red-500"
+        );
+        return;
+      }
+
+      const foundWords = masterDictionary
+        .filter((word) => {
+          if (!word.includes(centerLetter)) {
+            return false;
+          }
+
+          return [...word].every((character) => letterSet.has(character));
+        })
+        .sort((a, b) => {
+          if (b.length !== a.length) {
+            return b.length - a.length;
+          }
+
+          return a.localeCompare(b);
         });
 
-        function solvePuzzle() {
-            const centerLetter = document.getElementById('centerLetter').value.toUpperCase().trim();
-            const outerInputs = document.querySelectorAll('.outer-letter');
-            
-            let letters = [centerLetter];
-            outerInputs.forEach(input => {
-                if(input.value) letters.push(input.value.toUpperCase().trim());
-            });
+      resultsContainer.innerHTML = "";
 
-            const resultsContainer = document.getElementById('resultsContainer');
-            const wordCountBadge = document.getElementById('wordCount');
-            resultsContainer.innerHTML = "";
+      if (foundWords.length === 0) {
+        renderMessage(
+          "No matching words were found. Check that all letters are correct."
+        );
+        return;
+      }
 
-            if (!centerLetter) {
-                resultsContainer.innerHTML = "<p class='text-red-500 not-italic font-bold'>The center letter field is required!</p>";
-                return;
-            }
+      wordCountBadge.textContent = `${foundWords.length} word${foundWords.length === 1 ? "" : "s"}`;
+      wordCountBadge.classList.remove("hidden");
 
-            const letterSet = new Set(letters);
-            
-            // Search computation running inside client side execution space loop
-            const foundWords = masterDictionary.filter(word => {
-                const upperWord = word.toUpperCase();
-                if (!upperWord.includes(centerLetter)) return false;
-                for (let char of upperWord) {
-                    if (!letterSet.has(char)) return false;
-                }
-                return true;
-            });
+      let currentLength = null;
+      let groupContainer = null;
 
-            if (foundWords.length === 0) {
-                resultsContainer.innerHTML = "<p class='text-gray-500 not-italic'>No valid matching dictionary words found using that letter structure. Double check inputs!</p>";
+      foundWords.forEach((word) => {
+        if (word.length !== currentLength) {
+          currentLength = word.length;
+
+          const heading = document.createElement("h3");
+          heading.className =
+            "mt-4 border-b pb-1 text-sm font-bold uppercase tracking-wider text-gray-400";
+          heading.textContent = `${currentLength}-Letter Words`;
+
+          groupContainer = document.createElement("div");
+          groupContainer.className = "mt-2 flex flex-wrap gap-2";
+
+          resultsContainer.appendChild(heading);
+          resultsContainer.appendChild(groupContainer);
+        }
+
+        const pangram = isPangram(word, letterSet);
+        const wordBadge = document.createElement("span");
+
+        wordBadge.className = pangram
+          ? "cursor-default rounded-lg border border-amber-300 bg-amber-100 px-3 py-1 text-sm font-bold text-amber-800 shadow-sm"
+          : "cursor-default rounded-lg bg-gray-100 px-3 py-1 text-sm text-gray-800 transition-colors hover:bg-gray-200";
+
+        wordBadge.textContent = pangram
+          ? `${word} 👑 Pangram`
+          : word;
+
+        groupContainer.appendChild(wordBadge);
+      });
+    }
+
+    const inputs = Array.from(document.querySelectorAll(".cell-input"));
+
+    inputs.forEach((input, index) => {
+      input.addEventListener("input", (event) => {
+        event.target.value = normalizeLetter(event.target.value);
+
+        if (event.target.value && index < inputs.length - 1) {
+          inputs[index + 1].focus();
+        }
+      });
+
+      input.addEventListener("keydown", (event) => {
+        if (
+          event.key === "Backspace" &&
+          !event.target.value &&
+          index > 0
+        ) {
+          inputs[index - 1].focus();
+        }
+
+        if (event.key === "Enter" && !solveButton.disabled) {
+          solvePuzzle();
+        }
+      });
+    });
+
+    solveButton.addEventListener("click", solvePuzzle);
+
+    window.addEventListener("DOMContentLoaded", loadGlobalDictionary);
+  </script>
+</body>
+</html>
