@@ -170,21 +170,31 @@
         </div>
       </div>
 
-      <div
-        class="mt-4 flex h-48 w-full items-center justify-center rounded border border-gray-300 bg-gray-200 text-center text-xs tracking-wider text-gray-500"
-        aria-label="Advertisement placeholder"
-      >
-        ADVERTISEMENT — SQUARE BANNER
-      </div>
+      <div>
+        <div
+          class="mt-4 flex h-32 w-full items-center justify-center rounded border border-gray-300 bg-gray-200 text-center text-xs tracking-wider text-gray-500"
+          aria-label="Advertisement placeholder"
+        >
+          ADVERTISEMENT — SQUARE BANNER
+        </div>
 
-      <button
-        id="solveBtn"
-        type="button"
-        disabled
-        class="mt-6 w-full cursor-not-allowed rounded-xl bg-gray-400 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md transition-colors"
-      >
-        Loading Dictionary…
-      </button>
+        <button
+          id="solveBtn"
+          type="button"
+          disabled
+          class="mt-6 w-full cursor-not-allowed rounded-xl bg-gray-400 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md transition-colors"
+        >
+          Loading Dictionary…
+        </button>
+
+        <button
+          id="refreshDictionaryBtn"
+          type="button"
+          class="mt-3 w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700 transition-colors hover:bg-amber-100"
+        >
+          Refresh Dictionary
+        </button>
+      </div>
     </section>
 
     <section
@@ -193,6 +203,7 @@
     >
       <h2 id="results-heading" class="mb-4 flex items-center gap-2 text-xl font-bold">
         <span>🎯 Found Solutions</span>
+
         <span
           id="wordCount"
           class="hidden rounded-full bg-gray-100 px-2 py-0.5 text-sm text-gray-600"
@@ -220,7 +231,9 @@
 
   <footer class="mt-12 border-t border-gray-200 bg-gray-100 px-4 py-8 text-sm text-gray-600">
     <div class="mx-auto max-w-4xl">
-      <h3 class="mb-2 font-bold text-gray-800">About This Spelling Bee Word Finder</h3>
+      <h3 class="mb-2 font-bold text-gray-800">
+        About This Spelling Bee Word Finder
+      </h3>
 
       <p class="mb-4 leading-relaxed">
         Enter six outer letters and a required center letter to find possible
@@ -246,6 +259,13 @@
     const solveButton = document.getElementById("solveBtn");
     const resultsContainer = document.getElementById("resultsContainer");
     const wordCountBadge = document.getElementById("wordCount");
+    const refreshDictionaryButton = document.getElementById(
+      "refreshDictionaryBtn"
+    );
+
+    const CACHE_KEY = "spellingBeeDictionary_v1";
+    const CACHE_TIMESTAMP_KEY = "spellingBeeDictionary_time";
+    const CACHE_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000;
 
     function normalizeLetter(value) {
       return value.replace(/[^a-z]/gi, "").slice(0, 1).toUpperCase();
@@ -253,59 +273,162 @@
 
     function setDictionaryStatus(type, message) {
       const styles = {
-        loading: "w-full border-b border-blue-100 bg-blue-50 py-1.5 text-center text-xs font-medium text-blue-700",
-        success: "w-full border-b border-green-100 bg-green-50 py-1.5 text-center text-xs font-semibold text-green-700",
-        error: "w-full border-b border-red-100 bg-red-50 py-1.5 text-center text-xs font-bold text-red-700"
+        loading:
+          "w-full border-b border-blue-100 bg-blue-50 py-1.5 text-center text-xs font-medium text-blue-700",
+        success:
+          "w-full border-b border-green-100 bg-green-50 py-1.5 text-center text-xs font-semibold text-green-700",
+        error:
+          "w-full border-b border-red-100 bg-red-50 py-1.5 text-center text-xs font-bold text-red-700"
       };
 
       statusBanner.className = styles[type];
       statusBanner.textContent = message;
     }
 
+    function setSolveButtonReady() {
+      solveButton.disabled = false;
+      solveButton.className =
+        "mt-6 w-full cursor-pointer rounded-xl bg-amber-500 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md transition-colors hover:bg-amber-600";
+      solveButton.textContent = "Find Words";
+    }
+
+    function setSolveButtonLoading() {
+      solveButton.disabled = true;
+      solveButton.className =
+        "mt-6 w-full cursor-not-allowed rounded-xl bg-gray-400 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md";
+      solveButton.textContent = "Loading Dictionary…";
+    }
+
+    function setSolveButtonUnavailable() {
+      solveButton.disabled = true;
+      solveButton.className =
+        "mt-6 w-full cursor-not-allowed rounded-xl bg-gray-400 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md";
+      solveButton.textContent = "Dictionary Unavailable";
+    }
+
+    function displayMessage(message, className = "text-gray-500") {
+      resultsContainer.innerHTML = `
+        <p class="${className} not-italic font-medium">${message}</p>
+      `;
+
+      wordCountBadge.classList.add("hidden");
+    }
+
     async function loadGlobalDictionary() {
-      setDictionaryStatus("loading", "Loading word dictionary…");
+      setSolveButtonLoading();
+      setDictionaryStatus("loading", "Checking local dictionary cache…");
 
       try {
-        const response = await fetch(dictionaryUrl);
+        const cachedData = localStorage.getItem(CACHE_KEY);
+        const cachedTime = localStorage.getItem(CACHE_TIMESTAMP_KEY);
 
-        if (!response.ok) {
-          throw new Error(`Dictionary request failed: ${response.status}`);
+        const cacheAge = cachedTime
+          ? Date.now() - Number(cachedTime)
+          : Infinity;
+
+        const isCacheValid =
+          cachedData &&
+          Number.isFinite(cacheAge) &&
+          cacheAge >= 0 &&
+          cacheAge < CACHE_EXPIRATION_MS;
+
+        if (isCacheValid) {
+          masterDictionary = JSON.parse(cachedData);
+
+          if (
+            !Array.isArray(masterDictionary) ||
+            masterDictionary.length === 0
+          ) {
+            throw new Error("Cached dictionary data is invalid.");
+          }
+
+          setDictionaryStatus(
+            "success",
+            `✅ Dictionary ready from cache — ${masterDictionary.length.toLocaleString()} words loaded.`
+          );
+        } else {
+          setDictionaryStatus("loading", "Downloading fresh word dictionary…");
+
+          const response = await fetch(dictionaryUrl, {
+            cache: "no-cache"
+          });
+
+          if (!response.ok) {
+            throw new Error(
+              `Dictionary request failed with status ${response.status}`
+            );
+          }
+
+          const rawText = await response.text();
+
+          masterDictionary = rawText
+            .split(/\r?\n/)
+            .map((word) => word.trim().toUpperCase())
+            .filter((word) => /^[A-Z]+$/.test(word))
+            .filter((word) => word.length >= 4);
+
+          if (masterDictionary.length === 0) {
+            throw new Error("No usable words were found in the dictionary.");
+          }
+
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(masterDictionary));
+            localStorage.setItem(
+              CACHE_TIMESTAMP_KEY,
+              Date.now().toString()
+            );
+          } catch (storageError) {
+            console.warn(
+              "Dictionary was loaded but could not be stored locally.",
+              storageError
+            );
+          }
+
+          setDictionaryStatus(
+            "success",
+            `✅ Dictionary ready — ${masterDictionary.length.toLocaleString()} words loaded.`
+          );
         }
 
-        const rawText = await response.text();
-
-        masterDictionary = rawText
-          .split(/\r?\n/)
-          .map((word) => word.trim().toUpperCase())
-          .filter((word) => /^[A-Z]+$/.test(word))
-          .filter((word) => word.length >= 4);
-
-        if (masterDictionary.length === 0) {
-          throw new Error("The dictionary did not contain usable words.");
-        }
-
-        setDictionaryStatus(
-          "success",
-          `Dictionary ready — ${masterDictionary.length.toLocaleString()} words indexed.`
-        );
-
-        solveButton.disabled = false;
-        solveButton.className =
-          "mt-6 w-full cursor-pointer rounded-xl bg-amber-500 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md transition-colors hover:bg-amber-600";
-        solveButton.textContent = "Find Words";
+        setSolveButtonReady();
       } catch (error) {
-        console.error(error);
+        console.error("Dictionary loading error:", error);
+
+        try {
+          const fallbackData = localStorage.getItem(CACHE_KEY);
+
+          if (fallbackData) {
+            const fallbackDictionary = JSON.parse(fallbackData);
+
+            if (
+              Array.isArray(fallbackDictionary) &&
+              fallbackDictionary.length > 0
+            ) {
+              masterDictionary = fallbackDictionary;
+
+              setDictionaryStatus(
+                "success",
+                `✅ Dictionary loaded from offline cache — ${masterDictionary.length.toLocaleString()} words available.`
+              );
+
+              setSolveButtonReady();
+              return;
+            }
+          }
+        } catch (cacheError) {
+          console.warn("Offline cache could not be read:", cacheError);
+        }
 
         setDictionaryStatus(
           "error",
-          "Dictionary download failed. Check your connection and refresh the page."
+          "⚠️ Dictionary failed to load. Check your connection and refresh the page."
         );
 
-        solveButton.textContent = "Dictionary Unavailable";
+        setSolveButtonUnavailable();
       }
     }
 
-    function getPuzzleLetters() {
+    function getPuzzleData() {
       const centerLetter = normalizeLetter(
         document.getElementById("centerLetter").value
       );
@@ -319,51 +442,45 @@
       return {
         centerLetter,
         outerLetters,
-        allLetters: [centerLetter, ...outerLetters].filter(Boolean)
+        letters: [centerLetter, ...outerLetters].filter(Boolean)
       };
     }
 
-    function renderMessage(message, colorClass = "text-gray-500") {
-      resultsContainer.innerHTML = `
-        <p class="${colorClass} not-italic font-medium">${message}</p>
-      `;
-      wordCountBadge.classList.add("hidden");
-    }
+    function isPangram(word, puzzleLetters) {
+      const lettersInWord = new Set(word);
 
-    function isPangram(word, letterSet) {
-      const usedLetters = new Set(word);
       return (
-        letterSet.size === 7 &&
-        usedLetters.size === 7 &&
-        [...letterSet].every((letter) => usedLetters.has(letter))
+        puzzleLetters.size === 7 &&
+        [...puzzleLetters].every((letter) => lettersInWord.has(letter))
       );
     }
 
     function solvePuzzle() {
-      const { centerLetter, outerLetters, allLetters } = getPuzzleLetters();
+      const { centerLetter, outerLetters, letters } = getPuzzleData();
 
       if (!centerLetter) {
-        renderMessage(
+        displayMessage(
           "The center letter is required.",
           "text-red-500"
         );
+
         document.getElementById("centerLetter").focus();
         return;
       }
 
       if (outerLetters.length !== 6) {
-        renderMessage(
+        displayMessage(
           "Please enter all six outer letters.",
           "text-red-500"
         );
         return;
       }
 
-      const letterSet = new Set(allLetters);
+      const letterSet = new Set(letters);
 
       if (letterSet.size !== 7) {
-        renderMessage(
-          "Each of the seven puzzle letters must be unique.",
+        displayMessage(
+          "All seven puzzle letters must be unique.",
           "text-red-500"
         );
         return;
@@ -388,17 +505,20 @@
       resultsContainer.innerHTML = "";
 
       if (foundWords.length === 0) {
-        renderMessage(
-          "No matching words were found. Check that all letters are correct."
+        displayMessage(
+          "No matching words were found. Double-check the puzzle letters."
         );
         return;
       }
 
-      wordCountBadge.textContent = `${foundWords.length} word${foundWords.length === 1 ? "" : "s"}`;
+      wordCountBadge.textContent = `${foundWords.length} word${
+        foundWords.length === 1 ? "" : "s"
+      }`;
+
       wordCountBadge.classList.remove("hidden");
 
       let currentLength = null;
-      let groupContainer = null;
+      let currentGroup = null;
 
       foundWords.forEach((word) => {
         if (word.length !== currentLength) {
@@ -409,11 +529,11 @@
             "mt-4 border-b pb-1 text-sm font-bold uppercase tracking-wider text-gray-400";
           heading.textContent = `${currentLength}-Letter Words`;
 
-          groupContainer = document.createElement("div");
-          groupContainer.className = "mt-2 flex flex-wrap gap-2";
+          currentGroup = document.createElement("div");
+          currentGroup.className = "mt-2 flex flex-wrap gap-2";
 
           resultsContainer.appendChild(heading);
-          resultsContainer.appendChild(groupContainer);
+          resultsContainer.appendChild(currentGroup);
         }
 
         const pangram = isPangram(word, letterSet);
@@ -427,7 +547,7 @@
           ? `${word} 👑 Pangram`
           : word;
 
-        groupContainer.appendChild(wordBadge);
+        currentGroup.appendChild(wordBadge);
       });
     }
 
@@ -458,6 +578,15 @@
     });
 
     solveButton.addEventListener("click", solvePuzzle);
+
+    refreshDictionaryButton.addEventListener("click", () => {
+      localStorage.removeItem(CACHE_KEY);
+      localStorage.removeItem(CACHE_TIMESTAMP_KEY);
+
+      masterDictionary = [];
+      displayMessage("Refreshing dictionary…");
+      loadGlobalDictionary();
+    });
 
     window.addEventListener("DOMContentLoaded", loadGlobalDictionary);
   </script>
