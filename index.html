@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NYT Spelling Bee Solver & Word Unscrambler</title>
-    <!-- FIX: Loading the official standalone Play CDN framework for Tailwind CSS engine processing -->
+    <!-- Loading the official standalone Play CDN framework for Tailwind CSS engine processing -->
     <script src="https://jsdelivr.net"></script>
     <style>
         .honeycomb { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 260px; margin: 0 auto; }
@@ -18,6 +18,11 @@
     <!-- AD PLACEMENT: TOP LEADERBOARD -->
     <div class="w-full max-w-4xl mx-auto my-4 p-4 bg-gray-200 border border-gray-300 rounded text-center text-xs text-gray-500 tracking-wider shadow-sm">
         ADVERTISEMENT - PLACEHOLDER FOR GOOGLE ADSENSE LEADERBOARD
+    </div>
+
+    <!-- DICTIONARY STATUS INDICATOR TOP BANNER -->
+    <div id="dictStatus" class="w-full text-center py-1.5 bg-blue-50 text-blue-700 text-xs font-medium border-b border-blue-100 transition-all duration-300">
+        ⏳ Initializing engine and downloading word arrays...
     </div>
 
     <main class="flex-grow max-w-4xl w-full mx-auto px-4 py-6 grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -51,8 +56,8 @@
                 ADVERTISEMENT - SQUARE BANNER
             </div>
             
-            <button onclick="solvePuzzle()" class="w-full mt-6 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors uppercase tracking-wide">
-                Unscramble Words
+            <button id="solveBtn" onclick="solvePuzzle()" disabled class="w-full mt-6 bg-gray-400 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors uppercase tracking-wide cursor-not-allowed">
+                Loading Dictionary...
             </button>
         </div>
 
@@ -74,12 +79,49 @@
         </div>
     </main>
 
+    <!-- SEO KEYWORD TEXT BLOCK - HELPS GOOGLE SEARCH BOT RANK THE PAGE -->
+    <footer class="bg-gray-100 border-t border-gray-200 py-8 px-4 mt-12 text-sm text-gray-600">
+        <div class="max-w-4xl mx-auto">
+            <h3 class="font-bold text-gray-800 mb-2">About Our NYT Spelling Bee Solver Tool</h3>
+            <p class="mb-4 leading-relaxed">
+                Welcome to the ultimate custom <strong>NYT Spelling Bee Solver</strong> and letter unscrambler app. If you are stuck trying to achieve the coveted Genius or Queen Bee status rankings on the daily New York Times puzzle, this solver will help you discover all hidden vocabulary words. 
+            </p>
+            <p class="leading-relaxed">
+                Simply enter the 6 outer letters and the core mandatory center letter into our interactive honeycomb solver layout matrix. Our engine scans an optimized array list of over 275,000 standard English words to instantly generate every single possible solution grouped completely by letter length, highlighting critical high-value game <strong>Pangrams</strong> automatically.
+            </p>
+        </div>
+    </footer>
+
     <script>
-        // Real-world foundational dataset for NYT Spelling Bee verification layouts
-        const dictionary = [
-            "BASE", "BALSAM", "BABE", "BALM", "BALMY", "BAME", "BAMS", "FLAB", "BLAB", "BLAME", 
-            "BLESSED", "SABLE", "ALBA", "AMBLE", "BLASÉ", "BEES", "SEAL", "MESS", "BALES", "FLABS"
-        ];
+        // Production Grade Core Array State
+        let masterDictionary = [];
+
+        // Fetch massive open source array list asynchronously on page load (275,000+ verified words)
+        async function loadGlobalDictionary() {
+            const dictionaryUrl = "https://raw.githubusercontent.com/words/an-array-of-english-words/refs/heads/master/index.json";
+            const statusBanner = document.getElementById('dictStatus');
+            const solveButton = document.getElementById('solveBtn');
+            
+            try {
+                const response = await fetch(dictionaryUrl);
+                if (!response.ok) throw new Error("Network latency failure");
+                
+                const rawWords = await response.json();
+                // Filter optimization: Only cache words that can legally fit standard Spelling Bee guidelines (4+ characters)
+                masterDictionary = rawWords.filter(word => word.length >= 4);
+                
+                statusBanner.className = "w-full text-center py-1.5 bg-green-50 text-green-700 text-xs font-semibold border-b border-green-100";
+                statusBanner.textContent = `✅ Global Dictionary Online! ${masterDictionary.length.toLocaleString()} game words indexed successfully.`;
+                
+                solveButton.disabled = false;
+                solveButton.className = "w-full mt-6 bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-4 rounded-xl shadow-md transition-colors uppercase tracking-wide cursor-pointer";
+                solveButton.textContent = "Unscramble Words";
+            } catch (error) {
+                console.error(error);
+                statusBanner.className = "w-full text-center py-1.5 bg-red-50 text-red-700 text-xs font-bold border-b border-red-100";
+                statusBanner.textContent = "⚠️ Dictionary Download Failed. Refresh your browser profile page to retry.";
+            }
+        }
 
         // Automatic focus advance script for faster keyboard user typing experiences
         const inputs = Array.from(document.querySelectorAll('.cell-input'));
@@ -110,9 +152,10 @@
             }
 
             const letterSet = new Set(letters);
-            const foundWords = dictionary.filter(word => {
-                const upperWord = word.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                if (upperWord.length < 4) return false;
+            
+            // Search computation running inside client side execution space loop
+            const foundWords = masterDictionary.filter(word => {
+                const upperWord = word.toUpperCase();
                 if (!upperWord.includes(centerLetter)) return false;
                 for (let char of upperWord) {
                     if (!letterSet.has(char)) return false;
@@ -121,41 +164,4 @@
             });
 
             if (foundWords.length === 0) {
-                resultsContainer.innerHTML = "<p class='text-gray-500 not-italic'>No matches found. (Try letters matching: B, A, S, E, L, M, F with center letter B)</p>";
-                wordCountBadge.classList.add('hidden');
-                return;
-            }
-
-            wordCountBadge.textContent = `${foundWords.length} words`;
-            wordCountBadge.classList.remove('hidden');
-            foundWords.sort((a,b) => b.length - a.length);
-            
-            let currentLength = 0;
-            let currentGroup = null;
-
-            foundWords.forEach(word => {
-                const upperWord = word.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-                if (upperWord.length !== currentLength) {
-                    currentLength = upperWord.length;
-                    const heading = document.createElement('h3');
-                    heading.className = "text-sm font-bold text-gray-400 uppercase tracking-wider mt-4 border-b pb-1";
-                    heading.textContent = `${currentLength} Letter Words`;
-                    resultsContainer.appendChild(heading);
-                    
-                    currentGroup = document.createElement('div');
-                    currentGroup.className = "flex flex-wrap gap-2 mt-2";
-                    resultsContainer.appendChild(currentGroup);
-                }
-
-                const wordBadge = document.createElement('span');
-                const isPangram = new Set(upperWord).size === 7 && letterSet.size === 7;
-                wordBadge.className = isPangram 
-                    ? "bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-lg text-sm border border-amber-300 shadow-sm cursor-pointer"
-                    : "bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-sm hover:bg-gray-200 transition-colors cursor-pointer";
-                wordBadge.textContent = isPangram ? `${word} 👑 (Pangram)` : word;
-                currentGroup.appendChild(wordBadge);
-            });
-        }
-    </script>
-</body>
-</html>
+                resultsContainer.innerHTML = "<p class='text-gray-500 not-italic'>No valid matching dictionary words found using that letter structure. Double check inputs!</p>";
