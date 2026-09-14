@@ -8,6 +8,7 @@
     content="Find possible Spelling Bee-style words using seven letters and a required center letter."
   />
   <meta name="robots" content="index, follow" />
+    <meta name="google-site-verification" content="-s3MAawSQTI8ztB_VpEPKbIjnNllaN5OuV04C89_buA" />
   <link rel="canonical" href="https://spelling-bee-solver-pro.netlify.app/" />
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
@@ -16,56 +17,352 @@
   <script src="https://cdn.tailwindcss.com"></script>
 
   <style>
-    .honeycomb {
-      display: grid;
-      grid-template-columns: repeat(3, 72px);
-      gap: 10px;
-      justify-content: center;
+    :root {
+      --ink: #162033;
+      --cream: #fffaf1;
+      --paper: #fffdf8;
+      --honey: #f6b52e;
+      --honey-dark: #d9860d;
+      --honey-soft: #fff2c8;
+      --line: #e8dcc3;
+      --success: #198754;
+      --danger: #c93737;
     }
 
-    .cell-input {
-      width: 72px;
-      height: 72px;
-      border: 2px solid #e2e8f0;
-      border-radius: 9999px;
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-width: 320px;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(255, 211, 102, 0.18), transparent 28rem),
+        radial-gradient(circle at 100% 16%, rgba(255, 237, 188, 0.55), transparent 32rem),
+        var(--cream);
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 40px;
+      height: 44px;
+      place-items: center;
+      background: linear-gradient(145deg, #ffdc77, #e99f1b);
+      clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0 50%);
+      box-shadow: 0 6px 16px rgba(199, 122, 10, 0.25);
+    }
+
+    .surface-card {
+      border: 1px solid rgba(229, 213, 178, 0.95);
+      background: rgba(255, 253, 248, 0.94);
+      box-shadow: 0 18px 48px rgba(78, 53, 11, 0.09);
+      backdrop-filter: blur(12px);
+    }
+
+    .hive-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 74px);
+      grid-template-rows: repeat(3, 69px);
+      align-items: center;
+      justify-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      padding: 10px 0 16px;
+    }
+
+    .hive-cell {
+      position: relative;
+      display: grid;
+      width: 70px;
+      height: 78px;
+      place-items: center;
+    }
+
+    .hive-cell:nth-child(1) {
+      grid-column: 2;
+      grid-row: 1;
+    }
+
+    .hive-cell:nth-child(2) {
+      grid-column: 1;
+      grid-row: 2;
+    }
+
+    .hive-cell:nth-child(3) {
+      z-index: 2;
+      grid-column: 2;
+      grid-row: 2;
+    }
+
+    .hive-cell:nth-child(4) {
+      grid-column: 3;
+      grid-row: 2;
+    }
+
+    .hive-cell:nth-child(5) {
+      grid-column: 1;
+      grid-row: 3;
+    }
+
+    .hive-cell:nth-child(6) {
+      grid-column: 2;
+      grid-row: 3;
+    }
+
+    .hive-cell:nth-child(7) {
+      grid-column: 3;
+      grid-row: 3;
+    }
+
+    .hex-shape {
+      position: absolute;
+      inset: 0;
+      border: 2px solid #ddcda8;
+      background: linear-gradient(145deg, #fffefa, #fff6df);
+      clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0 50%);
+      box-shadow: 0 5px 0 rgba(193, 165, 105, 0.22);
+      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+    }
+
+    .hive-cell:hover .hex-shape {
+      border-color: #e7a930;
+      transform: translateY(-2px);
+    }
+
+    .hive-cell:focus-within .hex-shape {
+      border-color: var(--honey-dark);
+      box-shadow: 0 0 0 4px rgba(246, 181, 46, 0.25), 0 7px 0 rgba(193, 165, 105, 0.22);
+      transform: translateY(-2px);
+    }
+
+    .hive-cell.center .hex-shape {
+      border-color: #d8860c;
+      background: linear-gradient(145deg, #ffe79c, #f4b52b);
+      box-shadow: 0 6px 0 rgba(161, 100, 6, 0.22);
+    }
+
+    .hex-input {
+      position: relative;
+      z-index: 2;
+      width: 66px;
+      height: 74px;
+      border: none;
+      background: transparent;
+      color: #243047;
       outline: none;
       text-align: center;
       font-size: 1.5rem;
-      font-weight: 800;
+      font-weight: 900;
+      line-height: 74px;
       text-transform: uppercase;
-      transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     }
 
-    .cell-input:focus {
-      border-color: #f59e0b;
-      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.22);
+    .hive-cell.center .hex-input {
+      color: #442f09;
     }
 
-    .center-cell {
-      background-color: #fef3c7;
-      border-color: #f59e0b;
+    .center-label {
+      position: absolute;
+      z-index: 3;
+      bottom: 2px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: #674004;
+      font-size: 0.52rem;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      pointer-events: none;
     }
 
-    .outer-cell {
-      background-color: #ffffff;
+    .hive-cell.input-error .hex-shape {
+      border-color: var(--danger);
+      background: #fff0f0;
+      box-shadow: 0 0 0 4px rgba(201, 55, 55, 0.12);
+    }
+
+    .hive-cell.input-success:not(.center) .hex-shape {
+      border-color: #52a878;
+      background: #f5fff9;
+    }
+
+    .hive-cell.input-success.center .hex-shape {
+      border-color: #ba7608;
+      background: linear-gradient(145deg, #ffeba9, #f5bd40);
+    }
+
+    .word-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      border: 1px solid #e9dfcd;
+      border-radius: 0.75rem;
+      background: #fffefa;
+      padding: 0.6rem 0.72rem;
+      color: #273247;
+      font-size: 0.84rem;
+      font-weight: 800;
+      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .word-chip:hover {
+      border-color: #dbaa52;
+      box-shadow: 0 6px 16px rgba(101, 68, 12, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .word-chip.pangram {
+      border-color: #e0a126;
+      background: linear-gradient(145deg, #fff5d3, #ffe5a0);
+      color: #674103;
+    }
+
+    .word-chip.hidden-by-filter {
+      display: none;
+    }
+
+    .word-score {
+      border-left: 1px solid rgba(117, 87, 30, 0.18);
+      padding-left: 0.45rem;
+      color: #81734f;
+      font-size: 0.72rem;
+      font-weight: 900;
+    }
+
+    .word-chip.pangram .word-score {
+      color: #86580a;
+    }
+
+    .filter-chip {
+      border: 1px solid #e3d8c2;
+      border-radius: 999px;
+      background: #fffefa;
+      padding: 0.42rem 0.72rem;
+      color: #596375;
+      font-size: 0.78rem;
+      font-weight: 800;
+      transition: 0.16s ease;
+    }
+
+    .filter-chip:hover {
+      border-color: #dfad4d;
+      color: #714805;
+    }
+
+    .filter-chip.active {
+      border-color: #dc980f;
+      background: #fff0c5;
+      color: #714805;
+    }
+
+    .filter-chip:focus-visible,
+    button:focus-visible,
+    a:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(246, 181, 46, 0.45);
+      outline-offset: 2px;
+    }
+
+    .progress-fill {
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #f1a91f, #ffd36a);
+      transition: width 0.2s ease;
+    }
+
+    .results-scroll::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .results-scroll::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .results-scroll::-webkit-scrollbar-thumb {
+      border: 2px solid transparent;
+      border-radius: 20px;
+      background: #dac79c;
+      background-clip: content-box;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 50;
+      right: 1rem;
+      bottom: 1rem;
+      max-width: min(24rem, calc(100vw - 2rem));
+      border: 1px solid #b9d8c6;
+      border-radius: 0.9rem;
+      background: #f2fff7;
+      box-shadow: 0 12px 30px rgba(19, 76, 45, 0.16);
+      padding: 0.9rem 1rem;
+      color: #17623f;
+      font-size: 0.9rem;
+      font-weight: 750;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(16px);
+      transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    .toast.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 420px) {
+      .hive-grid {
+        grid-template-columns: repeat(3, 66px);
+        grid-template-rows: repeat(3, 61px);
+      }
+
+      .hive-cell {
+        width: 62px;
+        height: 70px;
+      }
+
+      .hex-input {
+        width: 58px;
+        height: 67px;
+        font-size: 1.35rem;
+        line-height: 67px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
 
-<body class="flex min-h-screen flex-col bg-gray-50 font-sans text-gray-800">
-  <header class="border-b border-gray-100 bg-white">
-    <div class="mx-auto flex w-full max-w-4xl items-center justify-between px-4 py-4">
-      <a
-        href="/"
-        class="text-lg font-black tracking-tight text-amber-500"
-        aria-label="Spelling Bee Solver home"
-      >
-        Spelling Bee Solver
+<body class="flex min-h-screen flex-col text-slate-800">
+  <header class="border-b border-amber-100 bg-white/90 backdrop-blur">
+    <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
+      <a href="/" class="flex items-center gap-3" aria-label="Spelling Bee Solver home">
+        <span class="brand-mark text-lg" aria-hidden="true">🐝</span>
+
+        <span>
+          <span class="block text-lg font-black tracking-tight text-slate-900">
+            Spelling Bee Solver
+          </span>
+          <span class="block text-xs font-semibold text-slate-500">
+            Find possible words, pangrams, and scores
+          </span>
+        </span>
       </a>
 
       <a
         href="privacy.html"
-        class="text-sm font-medium text-gray-500 transition-colors hover:text-amber-600"
+        class="rounded-lg px-3 py-2 text-sm font-bold text-slate-600 transition hover:bg-amber-50 hover:text-amber-800"
       >
         Privacy
       </a>
@@ -74,276 +371,395 @@
 
   <div
     id="dictStatus"
-    class="w-full border-b border-blue-100 bg-blue-50 py-1.5 text-center text-xs font-medium text-blue-700"
+    class="border-b border-amber-100 bg-amber-50 px-4 py-2 text-center text-sm font-semibold text-amber-900"
     role="status"
     aria-live="polite"
   >
     Loading word dictionary…
   </div>
 
-  <main class="mx-auto grid w-full max-w-4xl flex-grow grid-cols-1 gap-6 px-4 py-6 md:grid-cols-3">
-    <section
-      class="flex flex-col justify-between rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:col-span-1"
-      aria-labelledby="solver-heading"
-    >
-      <div>
-        <h1
-          id="solver-heading"
-          class="mb-2 text-center text-2xl font-black tracking-tight text-amber-500"
-        >
-          Spelling Bee Solver
+  <main class="flex-grow">
+    <section class="border-b border-amber-100 bg-gradient-to-br from-[#fffaf1] via-[#fff7e8] to-[#fffdf9] px-4 py-10 sm:px-6 sm:py-14">
+      <div class="mx-auto max-w-3xl text-center">
+        <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/80 px-3 py-1 text-xs font-black uppercase tracking-[0.16em] text-amber-800 shadow-sm">
+          <span aria-hidden="true">✦</span>
+          Seven-letter word helper
+        </div>
+
+        <h1 class="mt-4 text-4xl font-black tracking-tight text-slate-900 sm:text-5xl">
+          Solve your hive faster.
         </h1>
 
-        <p class="mb-6 text-center text-sm text-gray-500">
-          Enter six outer letters and one required center letter.
+        <p class="mx-auto mt-3 max-w-2xl text-base leading-relaxed text-slate-600 sm:text-lg">
+          Add your seven letters, make sure the gold center letter is included,
+          and explore possible words in seconds.
         </p>
-
-        <div class="honeycomb mb-6" aria-label="Puzzle letter inputs">
-          <div aria-hidden="true"></div>
-
-          <input
-            id="letter1"
-            class="cell-input outer-letter outer-cell"
-            type="text"
-            maxlength="1"
-            inputmode="text"
-            autocomplete="off"
-            autocapitalize="characters"
-            placeholder="A"
-            aria-label="Outer letter 1"
-          />
-
-          <div aria-hidden="true"></div>
-
-          <input
-            id="letter2"
-            class="cell-input outer-letter outer-cell"
-            type="text"
-            maxlength="1"
-            inputmode="text"
-            autocomplete="off"
-            autocapitalize="characters"
-            placeholder="B"
-            aria-label="Outer letter 2"
-          />
-
-          <input
-            id="centerLetter"
-            class="cell-input center-cell"
-            type="text"
-            maxlength="1"
-            inputmode="text"
-            autocomplete="off"
-            autocapitalize="characters"
-            placeholder="★"
-            aria-label="Required center letter"
-            required
-          />
-
-          <input
-            id="letter3"
-            class="cell-input outer-letter outer-cell"
-            type="text"
-            maxlength="1"
-            inputmode="text"
-            autocomplete="off"
-            autocapitalize="characters"
-            placeholder="C"
-            aria-label="Outer letter 3"
-          />
-
-          <div aria-hidden="true"></div>
-
-          <input
-            id="letter4"
-            class="cell-input outer-letter outer-cell"
-            type="text"
-            maxlength="1"
-            inputmode="text"
-            autocomplete="off"
-            autocapitalize="characters"
-            placeholder="D"
-            aria-label="Outer letter 4"
-          />
-
-          <div aria-hidden="true"></div>
-
-          <div class="col-span-3 flex justify-center gap-10 pt-2">
-            <input
-              id="letter5"
-              class="cell-input outer-letter outer-cell"
-              type="text"
-              maxlength="1"
-              inputmode="text"
-              autocomplete="off"
-              autocapitalize="characters"
-              placeholder="E"
-              aria-label="Outer letter 5"
-            />
-
-            <input
-              id="letter6"
-              class="cell-input outer-letter outer-cell"
-              type="text"
-              maxlength="1"
-              inputmode="text"
-              autocomplete="off"
-              autocapitalize="characters"
-              placeholder="F"
-              aria-label="Outer letter 6"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div class="mt-4">
-        <button
-          id="solveBtn"
-          type="button"
-          disabled
-          class="w-full cursor-not-allowed rounded-xl bg-gray-400 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md transition-colors"
-        >
-          Loading Dictionary…
-        </button>
-
-        <button
-          id="refreshDictionaryBtn"
-          type="button"
-          class="mt-3 w-full rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-bold text-amber-700 transition-colors hover:bg-amber-100"
-        >
-          Refresh Dictionary
-        </button>
       </div>
     </section>
 
-    <section
-      class="flex flex-col rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:col-span-2"
-      aria-labelledby="results-heading"
-    >
-      <div class="mb-4 flex flex-wrap items-center justify-between gap-3">
-        <h2
-          id="results-heading"
-          class="flex items-center gap-2 text-xl font-bold"
+    <section class="mx-auto w-full max-w-6xl px-4 py-7 sm:px-6 sm:py-10">
+      <div class="grid items-start gap-7 lg:grid-cols-12">
+        <section
+          class="surface-card rounded-3xl p-5 sm:p-7 lg:col-span-5"
+          aria-labelledby="solver-heading"
         >
-          <span>🎯 Found Solutions</span>
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">
+                Your puzzle
+              </p>
 
-          <span
-            id="wordCount"
-            class="hidden rounded-full bg-gray-100 px-2 py-0.5 text-sm text-gray-600"
+              <h2 id="solver-heading" class="mt-1 text-2xl font-black tracking-tight text-slate-900">
+                Build the hive
+              </h2>
+
+              <p id="letterHelp" class="mt-2 text-sm leading-relaxed text-slate-600">
+                Use seven different letters. The gold center tile is required in every result.
+              </p>
+            </div>
+
+            <span
+              id="letterProgressText"
+              class="shrink-0 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700"
+            >
+              0 of 7
+            </span>
+          </div>
+
+          <div class="mt-5">
+            <div class="h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+              <div id="letterProgressFill" class="progress-fill w-0"></div>
+            </div>
+          </div>
+
+          <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50/70 p-3">
+            <label for="quickEntry" class="block text-xs font-black uppercase tracking-[0.12em] text-amber-900">
+              Fast entry
+            </label>
+
+            <div class="mt-2 flex gap-2">
+              <input
+                id="quickEntry"
+                type="text"
+                inputmode="text"
+                autocomplete="off"
+                autocapitalize="characters"
+                maxlength="7"
+                placeholder="Paste 7 letters, e.g. ACEILNP"
+                class="min-w-0 flex-grow rounded-xl border border-amber-200 bg-white px-3 py-2.5 text-sm font-bold uppercase text-slate-800 placeholder:normal-case placeholder:font-medium placeholder:text-slate-400 focus:border-amber-500 focus:outline-none focus:ring-4 focus:ring-amber-100"
+                aria-describedby="quickEntryHelp"
+              />
+
+              <button
+                id="applyQuickEntryBtn"
+                type="button"
+                class="min-h-11 shrink-0 rounded-xl bg-amber-500 px-4 text-sm font-black text-white shadow-sm transition hover:bg-amber-600"
+              >
+                Add
+              </button>
+            </div>
+
+            <p id="quickEntryHelp" class="mt-2 text-xs leading-relaxed text-amber-900">
+              Order: outer, outer, center, outer, outer, outer, outer.
+            </p>
+          </div>
+
+          <form id="solverForm" class="mt-6" novalidate>
+            <fieldset aria-describedby="letterHelp inputFeedback">
+              <legend class="sr-only">
+                Enter one required center letter and six outer letters
+              </legend>
+
+              <div class="hive-grid" aria-label="Puzzle letter inputs">
+                <div class="hive-cell">
+                  <span class="hex-shape" aria-hidden="true"></span>
+                  <label class="sr-only" for="letter1">Outer letter 1</label>
+                  <input id="letter1" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="A" aria-label="Outer letter 1" />
+                </div>
+
+                <div class="hive-cell">
+                  <span class="hex-shape" aria-hidden="true"></span>
+                  <label class="sr-only" for="letter2">Outer letter 2</label>
+                  <input id="letter2" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="B" aria-label="Outer letter 2" />
+                </div>
+
+                <div class="hive-cell center">
+                  <span class="hex-shape" aria-hidden="true"></span>
+                  <label class="sr-only" for="centerLetter">Required center letter</label>
+                  <input id="centerLetter" class="hex-input" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="★" aria-label="Required center letter" aria-required="true" required />
+                  <span class="center-label" aria-hidden="true">REQUIRED</span>
+                </div>
+
+                <div class="hive-cell">
+                  <span class="hex-shape" aria-hidden="true"></span>
+                  <label class="sr-only" for="letter3">Outer letter 3</label>
+                  <input id="letter3" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="C" aria-label="Outer letter 3" />
+                </div>
+
+                <div class="hive-cell">
+                  <span class="hex-shape" aria-hidden="true"></span>
+                  <label class="sr-only" for="letter4">Outer letter 4</label>
+                  <input id="letter4" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="D" aria-label="Outer letter 4" />
+                </div>
+
+                <div class="hive-cell">
+                  <span class="hex-shape" aria-hidden="true"></span>
+                  <label class="sr-only" for="letter5">Outer letter 5</label>
+                  <input id="letter5" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="E" aria-label="Outer letter 5" />
+                </div>
+
+                <div class="hive-cell">
+                  <span class="hex-shape" aria-hidden="true"></span>
+                  <label class="sr-only" for="letter6">Outer letter 6</label>
+                  <input id="letter6" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="F" aria-label="Outer letter 6" />
+                </div>
+              </div>
+            </fieldset>
+
+            <p
+              id="inputFeedback"
+              class="mt-2 min-h-6 rounded-lg bg-slate-50 px-3 py-2 text-center text-sm font-medium text-slate-600"
+              role="alert"
+              aria-live="assertive"
+            >
+              Enter letters individually or use Fast entry above.
+            </p>
+
+            <button
+              id="solveBtn"
+              type="submit"
+              disabled
+              class="mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-slate-400 px-4 py-3 text-base font-black text-white shadow-sm"
+            >
+              <span aria-hidden="true">⌛</span>
+              <span>Loading Dictionary…</span>
+            </button>
+
+            <div class="mt-3 grid grid-cols-2 gap-3">
+              <button
+                id="clearBtn"
+                type="button"
+                class="min-h-11 rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-black text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
+              >
+                Clear hive
+              </button>
+
+              <button
+                id="exampleBtn"
+                type="button"
+                class="min-h-11 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2.5 text-sm font-black text-amber-900 transition hover:border-amber-400 hover:bg-amber-100"
+              >
+                Try example
+              </button>
+            </div>
+
+            <button
+              id="refreshDictionaryBtn"
+              type="button"
+              class="mt-4 min-h-11 w-full rounded-xl px-4 py-2 text-center text-xs font-bold text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+            >
+              ↻ Refresh word dictionary
+            </button>
+          </form>
+        </section>
+
+        <section
+          class="surface-card flex min-h-[650px] flex-col overflow-hidden rounded-3xl lg:col-span-7"
+          aria-labelledby="results-heading"
+        >
+          <div class="border-b border-amber-100 bg-gradient-to-r from-white to-amber-50/70 p-5 sm:p-7">
+            <div class="flex flex-col gap-4">
+              <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-start">
+                <div>
+                  <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-700">
+                    Results
+                  </p>
+
+                  <h2 id="results-heading" class="mt-1 text-2xl font-black tracking-tight text-slate-900">
+                    Possible words
+                  </h2>
+
+                  <p id="searchSummary" class="mt-2 text-sm leading-relaxed text-slate-600">
+                    Add a complete hive to see results.
+                  </p>
+                </div>
+
+                <div class="flex flex-wrap gap-2">
+                  <span id="wordCount" class="hidden rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-black text-slate-700 shadow-sm">0 words</span>
+                  <span id="pangramCount" class="hidden rounded-full border border-amber-200 bg-amber-100 px-3 py-1.5 text-sm font-black text-amber-900 shadow-sm">0 pangrams</span>
+                  <span id="scoreTotal" class="hidden rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-black text-emerald-800 shadow-sm">0 points</span>
+                </div>
+              </div>
+
+              <div id="resultsToolbar" class="hidden border-t border-amber-100 pt-4">
+                <div class="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
+                  <div class="flex flex-wrap gap-2" aria-label="Result filters">
+                    <button type="button" class="filter-chip active" data-filter="all">All</button>
+                    <button type="button" class="filter-chip" data-filter="pangram">👑 Pangrams</button>
+                    <button type="button" class="filter-chip" data-filter="4">4 letters</button>
+                    <button type="button" class="filter-chip" data-filter="5">5 letters</button>
+                    <button type="button" class="filter-chip" data-filter="6">6 letters</button>
+                    <button type="button" class="filter-chip" data-filter="7plus">7+ letters</button>
+                  </div>
+
+                  <div class="flex gap-2">
+                    <button
+                      id="copyResultsBtn"
+                      type="button"
+                      class="min-h-10 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                    >
+                      Copy results
+                    </button>
+
+                    <button
+                      id="shareHiveBtn"
+                      type="button"
+                      class="min-h-10 rounded-lg border border-amber-300 bg-amber-50 px-3 py-2 text-xs font-black text-amber-900 transition hover:bg-amber-100"
+                    >
+                      Share hive
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div
+            id="resultsContainer"
+            class="results-scroll flex-grow overflow-y-auto p-5 sm:p-7"
+            aria-live="polite"
           >
-            0 words
-          </span>
-        </h2>
+            <div class="flex min-h-[400px] flex-col items-center justify-center text-center">
+              <div class="grid h-20 w-20 place-items-center rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100 text-4xl shadow-sm" aria-hidden="true">
+                🐝
+              </div>
 
-        <span
-          id="scoreTotal"
-          class="hidden rounded-full bg-amber-100 px-3 py-1 text-sm font-bold text-amber-800"
-          aria-live="polite"
-        >
-          0 points
-        </span>
-      </div>
+              <h3 class="mt-5 text-xl font-black text-slate-800">Ready to search.</h3>
 
-      <div
-        id="resultsContainer"
-        class="max-h-[500px] flex-grow space-y-4 overflow-y-auto pr-2 italic text-gray-400"
-        aria-live="polite"
-      >
-        Enter seven unique puzzle letters and select “Find Words.”
+              <p class="mt-2 max-w-sm text-sm leading-relaxed text-slate-500">
+                Add your hive letters, then choose
+                <strong class="font-bold text-slate-700">Find Possible Words</strong>.
+              </p>
+
+              <button
+                id="emptyExampleBtn"
+                type="button"
+                class="mt-5 min-h-11 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:bg-amber-600"
+              >
+                Load an example
+              </button>
+            </div>
+          </div>
+
+          <div class="border-t border-amber-100 bg-[#fffdf8] px-5 py-3 text-xs leading-relaxed text-slate-500 sm:px-7">
+            <span class="font-bold text-slate-700">Dictionary note:</span>
+            These are possible matches from a general English dictionary, not an official publisher-specific answer list.
+          </div>
+        </section>
       </div>
     </section>
   </main>
 
-  <footer class="mt-12 border-t border-gray-200 bg-gray-100 px-4 py-8 text-sm text-gray-600">
-    <div class="mx-auto max-w-4xl">
-      <h2 class="mb-2 font-bold text-gray-800">
-        About This Spelling Bee Word Finder
-      </h2>
+  <footer class="mt-8 border-t border-amber-100 bg-[#fffdf8] px-4 py-9 text-sm text-slate-600 sm:px-6">
+    <div class="mx-auto max-w-6xl">
+      <div class="grid gap-7 md:grid-cols-3">
+        <section>
+          <h2 class="font-black text-slate-900">Fast browser-based solver</h2>
+          <p class="mt-2 leading-relaxed">
+            Your puzzle letters are processed in your browser. A saved dictionary can make future visits faster.
+          </p>
+        </section>
 
-      <p class="mb-4 leading-relaxed">
-        Enter six outer letters and a required center letter to find possible
-        English words made only from those letters. Every displayed word
-        contains the center letter and has at least four characters.
-      </p>
+        <section>
+          <h2 class="font-black text-slate-900">Pangrams and score</h2>
+          <p class="mt-2 leading-relaxed">
+            Crowned words use all seven letters. Scores are estimates based on a common Spelling Bee-style convention.
+          </p>
+        </section>
 
-      <p class="leading-relaxed">
-        Words that use all seven available letters are marked as pangrams.
-        Dictionary acceptance rules vary by puzzle, so this tool is best used as
-        a word-finding aid rather than an exact replica of a particular puzzle’s
-        official word list.
-      </p>
+        <section>
+          <h2 class="font-black text-slate-900">Need help?</h2>
+          <p class="mt-2 leading-relaxed">
+            Start with the gold center letter, add six unique outer letters, and search for possible matches.
+          </p>
+        </section>
+      </div>
 
-      <section class="mt-8 border-t border-gray-200 pt-6 text-gray-700">
-        <h2 class="mb-3 text-xl font-bold text-gray-900">
-          How to Use This Spelling Bee Solver
-        </h2>
-
-        <p class="mb-4 text-sm leading-relaxed">
-          Enter the required center letter in the yellow honeycomb cell, then
-          add the six outer letters in any order. Select
-          <strong>Find Words</strong> to generate possible English words that
-          use only your seven letters, include the center letter, and contain at
-          least four characters.
-        </p>
-
-        <h3 class="mb-2 text-base font-bold text-gray-900">
-          Find Pangrams and Longer Words
-        </h3>
-
-        <p class="text-sm leading-relaxed">
-          Results are grouped by word length so you can explore longer
-          possibilities first. A crown icon marks a possible
-          <strong>pangram</strong>: a word that uses each of the seven available
-          letters at least once. The displayed point total uses the common
-          Spelling Bee-style convention of one point for four-letter words, one
-          point per letter for longer words, and a seven-point pangram bonus.
-          This tool uses a general English dictionary, so results can differ
-          from an official publisher word list.
-        </p>
-      </section>
-
-      <div class="mt-6 flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs text-gray-400">
+      <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-amber-100 pt-6 text-xs text-slate-500">
         <span>© 2026 By Cash Marketing</span>
-
-        <a href="privacy.html" class="hover:underline">
+        <a href="privacy.html" class="font-bold text-slate-600 transition hover:text-amber-700 hover:underline">
           Privacy Policy
         </a>
       </div>
     </div>
   </footer>
 
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
   <script>
     let masterDictionary = [];
     let dictionaryLoadInProgress = false;
+    let latestResults = [];
+    let activeFilter = "all";
 
     const dictionaryUrl =
       "https://raw.githubusercontent.com/dwyl/english-words/master/words_alpha.txt";
 
-    const statusBanner = document.getElementById("dictStatus");
-    const solveButton = document.getElementById("solveBtn");
-    const resultsContainer = document.getElementById("resultsContainer");
-    const wordCountBadge = document.getElementById("wordCount");
-    const scoreTotalBadge = document.getElementById("scoreTotal");
-    const refreshDictionaryButton = document.getElementById(
-      "refreshDictionaryBtn"
-    );
-
-    const CACHE_KEY = "spellingBeeDictionary_v1";
-    const CACHE_TIMESTAMP_KEY = "spellingBeeDictionary_time";
+    const CACHE_KEY = "spellingBeeDictionary_v4";
+    const CACHE_TIMESTAMP_KEY = "spellingBeeDictionary_time_v4";
     const CACHE_EXPIRATION_MS = 7 * 24 * 60 * 60 * 1000;
+
+    const EXAMPLE_LETTERS = ["A", "C", "E", "I", "L", "N", "P"];
+
+    const statusBanner = document.getElementById("dictStatus");
+    const solverForm = document.getElementById("solverForm");
+    const solveButton = document.getElementById("solveBtn");
+    const clearButton = document.getElementById("clearBtn");
+    const exampleButton = document.getElementById("exampleBtn");
+    const refreshDictionaryButton = document.getElementById("refreshDictionaryBtn");
+    const quickEntry = document.getElementById("quickEntry");
+    const applyQuickEntryButton = document.getElementById("applyQuickEntryBtn");
+    const inputFeedback = document.getElementById("inputFeedback");
+    const letterProgressText = document.getElementById("letterProgressText");
+    const letterProgressFill = document.getElementById("letterProgressFill");
+    const resultsContainer = document.getElementById("resultsContainer");
+    const resultsToolbar = document.getElementById("resultsToolbar");
+    const wordCountBadge = document.getElementById("wordCount");
+    const pangramCountBadge = document.getElementById("pangramCount");
+    const scoreTotalBadge = document.getElementById("scoreTotal");
+    const searchSummary = document.getElementById("searchSummary");
+    const copyResultsButton = document.getElementById("copyResultsBtn");
+    const shareHiveButton = document.getElementById("shareHiveBtn");
+    const toast = document.getElementById("toast");
+    const inputs = Array.from(document.querySelectorAll(".hex-input"));
 
     function normalizeLetter(value) {
       return value.replace(/[^a-z]/gi, "").slice(0, 1).toUpperCase();
     }
 
+    function sanitizeLetters(value) {
+      return value.replace(/[^a-z]/gi, "").toUpperCase().slice(0, 7);
+    }
+
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add("visible");
+
+      window.clearTimeout(showToast.timeout);
+
+      showToast.timeout = window.setTimeout(() => {
+        toast.classList.remove("visible");
+      }, 2800);
+    }
+
     function setDictionaryStatus(type, message) {
       const styles = {
         loading:
-          "w-full border-b border-blue-100 bg-blue-50 py-1.5 text-center text-xs font-medium text-blue-700",
+          "border-b border-amber-100 bg-amber-50 px-4 py-2 text-center text-sm font-semibold text-amber-900",
         success:
-          "w-full border-b border-green-100 bg-green-50 py-1.5 text-center text-xs font-semibold text-green-700",
+          "border-b border-emerald-100 bg-emerald-50 px-4 py-2 text-center text-sm font-semibold text-emerald-800",
         error:
-          "w-full border-b border-red-100 bg-red-50 py-1.5 text-center text-xs font-bold text-red-700"
+          "border-b border-red-100 bg-red-50 px-4 py-2 text-center text-sm font-bold text-red-800"
       };
 
       statusBanner.className = styles[type];
@@ -353,35 +769,140 @@
     function setSolveButtonLoading() {
       solveButton.disabled = true;
       solveButton.className =
-        "w-full cursor-not-allowed rounded-xl bg-gray-400 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md";
-      solveButton.textContent = "Loading Dictionary…";
+        "mt-4 flex min-h-12 w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-slate-400 px-4 py-3 text-base font-black text-white shadow-sm";
+      solveButton.innerHTML =
+        '<span aria-hidden="true">⌛</span><span>Loading Dictionary…</span>';
     }
 
     function setSolveButtonReady() {
       solveButton.disabled = false;
       solveButton.className =
-        "w-full cursor-pointer rounded-xl bg-amber-500 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md transition-colors hover:bg-amber-600";
-      solveButton.textContent = "Find Words";
+        "mt-4 flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-[#ea9e1d] px-4 py-3 text-base font-black text-white shadow-md shadow-amber-200 transition hover:from-amber-600 hover:to-[#d9870b] focus:outline-none focus:ring-4 focus:ring-amber-200";
+      solveButton.innerHTML =
+        '<span aria-hidden="true">🔎</span><span>Find Possible Words</span>';
     }
 
     function setSolveButtonUnavailable() {
       solveButton.disabled = true;
       solveButton.className =
-        "w-full cursor-not-allowed rounded-xl bg-gray-400 px-4 py-3 font-bold uppercase tracking-wide text-white shadow-md";
-      solveButton.textContent = "Dictionary Unavailable";
+        "mt-4 flex min-h-12 w-full cursor-not-allowed items-center justify-center gap-2 rounded-xl bg-slate-400 px-4 py-3 text-base font-black text-white shadow-sm";
+      solveButton.innerHTML =
+        '<span aria-hidden="true">!</span><span>Dictionary Unavailable</span>';
+    }
+
+    function setRefreshLoading(isLoading) {
+      refreshDictionaryButton.disabled = isLoading;
+      refreshDictionaryButton.classList.toggle("opacity-50", isLoading);
+      refreshDictionaryButton.classList.toggle("cursor-not-allowed", isLoading);
+      refreshDictionaryButton.textContent = isLoading
+        ? "Refreshing dictionary…"
+        : "↻ Refresh word dictionary";
     }
 
     function hideResultSummary() {
       wordCountBadge.classList.add("hidden");
+      pangramCountBadge.classList.add("hidden");
       scoreTotalBadge.classList.add("hidden");
+      resultsToolbar.classList.add("hidden");
     }
 
-    function displayMessage(message, className = "text-gray-500") {
+    function showInputFeedback(message, type = "neutral") {
+      const styles = {
+        neutral:
+          "mt-2 min-h-6 rounded-lg bg-slate-50 px-3 py-2 text-center text-sm font-medium text-slate-600",
+        success:
+          "mt-2 min-h-6 rounded-lg bg-emerald-50 px-3 py-2 text-center text-sm font-bold text-emerald-800",
+        error:
+          "mt-2 min-h-6 rounded-lg bg-red-50 px-3 py-2 text-center text-sm font-bold text-red-700"
+      };
+
+      inputFeedback.className = styles[type];
+      inputFeedback.textContent = message;
+    }
+
+    function updateProgress() {
+      const completed = inputs.filter((input) =>
+        normalizeLetter(input.value)
+      ).length;
+
+      letterProgressText.textContent = `${completed} of 7`;
+      letterProgressFill.style.width = `${(completed / 7) * 100}%`;
+
+      if (completed === 7) {
+        letterProgressText.className =
+          "shrink-0 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-800";
+      } else {
+        letterProgressText.className =
+          "shrink-0 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700";
+      }
+    }
+
+    function displayWelcomeMessage() {
       resultsContainer.innerHTML = `
-        <p class="${className} not-italic font-medium">${message}</p>
+        <div class="flex min-h-[400px] flex-col items-center justify-center text-center">
+          <div class="grid h-20 w-20 place-items-center rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100 text-4xl shadow-sm" aria-hidden="true">🐝</div>
+          <h3 class="mt-5 text-xl font-black text-slate-800">Ready to search.</h3>
+          <p class="mt-2 max-w-sm text-sm leading-relaxed text-slate-500">
+            Add your hive letters, then choose
+            <strong class="font-bold text-slate-700">Find Possible Words</strong>.
+          </p>
+          <button
+            id="emptyExampleBtn"
+            type="button"
+            class="mt-5 min-h-11 rounded-xl bg-amber-500 px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:bg-amber-600"
+          >
+            Load an example
+          </button>
+        </div>
+      `;
+
+      document
+        .getElementById("emptyExampleBtn")
+        .addEventListener("click", loadExample);
+
+      searchSummary.textContent = "Add a complete hive to see results.";
+      hideResultSummary();
+    }
+
+    function displayResultsMessage(message) {
+      resultsContainer.innerHTML = `
+        <div class="flex min-h-[400px] flex-col items-center justify-center text-center">
+          <div class="grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 text-2xl" aria-hidden="true">💡</div>
+          <p class="mt-4 max-w-md text-base font-bold leading-relaxed text-slate-600">${message}</p>
+        </div>
       `;
 
       hideResultSummary();
+    }
+
+    function getCell(input) {
+      return input.closest(".hive-cell");
+    }
+
+    function clearInputStates() {
+      inputs.forEach((input) => {
+        getCell(input).classList.remove("input-error", "input-success");
+        input.removeAttribute("aria-invalid");
+      });
+    }
+
+    function markInvalid(inputsToMark) {
+      clearInputStates();
+
+      inputsToMark.forEach((input) => {
+        getCell(input).classList.add("input-error");
+        input.setAttribute("aria-invalid", "true");
+      });
+    }
+
+    function markCompleteInputs() {
+      clearInputStates();
+
+      inputs.forEach((input) => {
+        if (normalizeLetter(input.value)) {
+          getCell(input).classList.add("input-success");
+        }
+      });
     }
 
     function getCachedDictionary() {
@@ -407,13 +928,13 @@
 
       dictionaryLoadInProgress = true;
       setSolveButtonLoading();
+      setRefreshLoading(true);
 
       try {
-        setDictionaryStatus("loading", "Checking local dictionary cache…");
+        setDictionaryStatus("loading", "Checking saved word dictionary…");
 
         const cachedData = localStorage.getItem(CACHE_KEY);
         const cachedTime = localStorage.getItem(CACHE_TIMESTAMP_KEY);
-
         const cacheAge = cachedTime
           ? Date.now() - Number(cachedTime)
           : Infinity;
@@ -436,14 +957,14 @@
 
           setDictionaryStatus(
             "success",
-            `✅ Dictionary ready from cache — ${masterDictionary.length.toLocaleString()} words loaded.`
+            `Ready — ${masterDictionary.length.toLocaleString()} words loaded from browser cache.`
           );
 
           setSolveButtonReady();
           return;
         }
 
-        setDictionaryStatus("loading", "Downloading fresh word dictionary…");
+        setDictionaryStatus("loading", "Downloading word dictionary…");
 
         const response = await fetch(dictionaryUrl, {
           cache: "no-cache"
@@ -457,17 +978,15 @@
 
         const rawText = await response.text();
 
-        const dictionary = rawText
+        masterDictionary = rawText
           .split(/\r?\n/)
           .map((word) => word.trim().toUpperCase())
           .filter((word) => /^[A-Z]+$/.test(word))
           .filter((word) => word.length >= 4);
 
-        if (dictionary.length === 0) {
+        if (!masterDictionary.length) {
           throw new Error("No usable words were found in the dictionary.");
         }
-
-        masterDictionary = dictionary;
 
         try {
           localStorage.setItem(CACHE_KEY, JSON.stringify(masterDictionary));
@@ -477,14 +996,14 @@
           );
         } catch (storageError) {
           console.warn(
-            "Dictionary loaded but could not be saved to local storage.",
+            "Dictionary loaded but could not be saved locally.",
             storageError
           );
         }
 
         setDictionaryStatus(
           "success",
-          `✅ Dictionary ready — ${masterDictionary.length.toLocaleString()} words loaded.`
+          `Ready — ${masterDictionary.length.toLocaleString()} words loaded.`
         );
 
         setSolveButtonReady();
@@ -499,7 +1018,7 @@
 
             setDictionaryStatus(
               "success",
-              `✅ Dictionary loaded from offline cache — ${masterDictionary.length.toLocaleString()} words available.`
+              `Offline mode — ${masterDictionary.length.toLocaleString()} saved words are available.`
             );
 
             setSolveButtonReady();
@@ -511,27 +1030,27 @@
 
         setDictionaryStatus(
           "error",
-          "⚠️ Dictionary failed to load. Check your connection and refresh the page."
+          "Dictionary could not load. Check your connection, then refresh the page."
         );
 
         setSolveButtonUnavailable();
       } finally {
         dictionaryLoadInProgress = false;
+        setRefreshLoading(false);
       }
     }
 
     function getPuzzleData() {
-      const centerLetter = normalizeLetter(
-        document.getElementById("centerLetter").value
-      );
-
-      const outerLetters = Array.from(
-        document.querySelectorAll(".outer-letter")
-      )
+      const centerInput = document.getElementById("centerLetter");
+      const outerInputs = Array.from(document.querySelectorAll(".outer-letter"));
+      const centerLetter = normalizeLetter(centerInput.value);
+      const outerLetters = outerInputs
         .map((input) => normalizeLetter(input.value))
         .filter(Boolean);
 
       return {
+        centerInput,
+        outerInputs,
         centerLetter,
         outerLetters,
         letters: [centerLetter, ...outerLetters].filter(Boolean)
@@ -549,36 +1068,196 @@
 
     function getWordScore(word, pangram) {
       const baseScore = word.length === 4 ? 1 : word.length;
-
       return pangram ? baseScore + 7 : baseScore;
     }
 
-    function solvePuzzle() {
-      const { centerLetter, outerLetters, letters } = getPuzzleData();
+    function validatePuzzle() {
+      const {
+        centerInput,
+        outerInputs,
+        centerLetter,
+        outerLetters,
+        letters
+      } = getPuzzleData();
 
       if (!centerLetter) {
-        displayMessage("The center letter is required.", "text-red-500");
-        document.getElementById("centerLetter").focus();
-        return;
+        markInvalid([centerInput]);
+        showInputFeedback(
+          "Add the required center letter in the gold tile.",
+          "error"
+        );
+        centerInput.focus();
+        return null;
       }
 
       if (outerLetters.length !== 6) {
-        displayMessage(
-          "Please enter all six outer letters.",
-          "text-red-500"
+        const emptyInput = outerInputs.find(
+          (input) => !normalizeLetter(input.value)
         );
-        return;
+
+        markInvalid(emptyInput ? [emptyInput] : outerInputs);
+        showInputFeedback(
+          "Add one letter to each of the six outer tiles.",
+          "error"
+        );
+
+        emptyInput?.focus();
+        return null;
       }
 
       const letterSet = new Set(letters);
 
       if (letterSet.size !== 7) {
-        displayMessage(
-          "All seven puzzle letters must be unique.",
-          "text-red-500"
+        const duplicateInputs = [];
+        const seenLetters = new Set();
+
+        inputs.forEach((input) => {
+          const letter = normalizeLetter(input.value);
+
+          if (seenLetters.has(letter)) {
+            duplicateInputs.push(input);
+          }
+
+          seenLetters.add(letter);
+        });
+
+        markInvalid(duplicateInputs.length ? duplicateInputs : inputs);
+        showInputFeedback(
+          "Each tile needs a different letter. Replace the duplicate.",
+          "error"
+        );
+
+        duplicateInputs[0]?.focus();
+        return null;
+      }
+
+      markCompleteInputs();
+
+      return {
+        centerLetter,
+        letterSet,
+        letters
+      };
+    }
+
+    function renderResults() {
+      const visibleResults = latestResults.filter((item) => {
+        if (activeFilter === "all") {
+          return true;
+        }
+
+        if (activeFilter === "pangram") {
+          return item.pangram;
+        }
+
+        if (activeFilter === "7plus") {
+          return item.word.length >= 7;
+        }
+
+        return item.word.length === Number(activeFilter);
+      });
+
+      resultsContainer.innerHTML = "";
+
+      if (!visibleResults.length) {
+        resultsContainer.innerHTML = `
+          <div class="flex min-h-[400px] flex-col items-center justify-center text-center">
+            <div class="grid h-16 w-16 place-items-center rounded-2xl bg-slate-100 text-2xl" aria-hidden="true">🔍</div>
+            <p class="mt-4 max-w-sm text-base font-bold text-slate-700">No words match this filter.</p>
+            <button
+              id="resetFilterBtn"
+              type="button"
+              class="mt-4 min-h-11 rounded-xl border border-amber-300 bg-amber-50 px-4 py-2 text-sm font-black text-amber-900 transition hover:bg-amber-100"
+            >
+              Show all results
+            </button>
+          </div>
+        `;
+
+        document.getElementById("resetFilterBtn").addEventListener("click", () => {
+          setActiveFilter("all");
+        });
+
+        return;
+      }
+
+      let currentLength = null;
+      let currentGroup = null;
+
+      visibleResults.forEach((item) => {
+        if (item.word.length !== currentLength) {
+          currentLength = item.word.length;
+
+          const heading = document.createElement("h3");
+          heading.className =
+            "mt-7 flex items-center gap-3 text-sm font-black uppercase tracking-[0.14em] text-slate-500";
+          heading.innerHTML = `
+            <span>${currentLength}-letter words</span>
+            <span class="h-px flex-grow bg-amber-100"></span>
+          `;
+
+          currentGroup = document.createElement("div");
+          currentGroup.className = "mt-3 flex flex-wrap gap-2";
+
+          resultsContainer.appendChild(heading);
+          resultsContainer.appendChild(currentGroup);
+        }
+
+        const wordBadge = document.createElement("span");
+        wordBadge.className = item.pangram ? "word-chip pangram" : "word-chip";
+        wordBadge.dataset.length = item.word.length;
+        wordBadge.dataset.pangram = item.pangram ? "true" : "false";
+
+        wordBadge.innerHTML = item.pangram
+          ? `
+            <span>${item.word}</span>
+            <span aria-label="Pangram">👑</span>
+            <span class="word-score">${item.score} pts</span>
+          `
+          : `
+            <span>${item.word}</span>
+            <span class="word-score">${item.score} pt${
+              item.score === 1 ? "" : "s"
+            }</span>
+          `;
+
+        currentGroup.appendChild(wordBadge);
+      });
+    }
+
+    function setActiveFilter(filter) {
+      activeFilter = filter;
+
+      document.querySelectorAll("[data-filter]").forEach((button) => {
+        button.classList.toggle(
+          "active",
+          button.dataset.filter === activeFilter
+        );
+      });
+
+      renderResults();
+    }
+
+    function solvePuzzle() {
+      if (!masterDictionary.length) {
+        showInputFeedback(
+          "The dictionary is still loading. Please wait a moment.",
+          "error"
         );
         return;
       }
+
+      const puzzle = validatePuzzle();
+
+      if (!puzzle) {
+        latestResults = [];
+        displayResultsMessage(
+          "Complete your seven-letter hive to see possible matching words."
+        );
+        return;
+      }
+
+      const { centerLetter, letterSet, letters } = puzzle;
 
       const foundWords = masterDictionary
         .filter((word) => {
@@ -588,29 +1267,46 @@
 
           return [...word].every((letter) => letterSet.has(letter));
         })
-        .sort((firstWord, secondWord) => {
-          if (secondWord.length !== firstWord.length) {
-            return secondWord.length - firstWord.length;
+        .sort((a, b) => {
+          if (b.length !== a.length) {
+            return b.length - a.length;
           }
 
-          return firstWord.localeCompare(secondWord);
+          return a.localeCompare(b);
         });
 
-      resultsContainer.innerHTML = "";
-
-      if (foundWords.length === 0) {
-        displayMessage(
-          "No matching words were found. Double-check the puzzle letters."
+      if (!foundWords.length) {
+        latestResults = [];
+        displayResultsMessage(
+          "No matches were found for those letters. Check the hive or try another puzzle."
         );
         return;
       }
 
-      const totalScore = foundWords.reduce((total, word) => {
-        return total + getWordScore(word, isPangram(word, letterSet));
-      }, 0);
+      latestResults = foundWords.map((word) => {
+        const pangram = isPangram(word, letterSet);
 
-      wordCountBadge.textContent = `${foundWords.length} word${
-        foundWords.length === 1 ? "" : "s"
+        return {
+          word,
+          pangram,
+          score: getWordScore(word, pangram)
+        };
+      });
+
+      activeFilter = "all";
+
+      const pangramWords = latestResults.filter((item) => item.pangram);
+      const totalScore = latestResults.reduce(
+        (total, item) => total + item.score,
+        0
+      );
+
+      wordCountBadge.textContent = `${latestResults.length} word${
+        latestResults.length === 1 ? "" : "s"
+      }`;
+
+      pangramCountBadge.textContent = `${pangramWords.length} pangram${
+        pangramWords.length === 1 ? "" : "s"
       }`;
 
       scoreTotalBadge.textContent = `${totalScore} point${
@@ -618,53 +1314,208 @@
       }`;
 
       wordCountBadge.classList.remove("hidden");
+      pangramCountBadge.classList.remove("hidden");
       scoreTotalBadge.classList.remove("hidden");
+      resultsToolbar.classList.remove("hidden");
 
-      let currentLength = null;
-      let currentGroup = null;
+      searchSummary.innerHTML = `
+        Searching with <strong class="font-black text-slate-800">${letters.join(" · ")}</strong>
+        — center letter: <strong class="font-black text-amber-800">${centerLetter}</strong>.
+      `;
 
-      foundWords.forEach((word) => {
-        if (word.length !== currentLength) {
-          currentLength = word.length;
+      showInputFeedback(
+        `Found ${latestResults.length} possible words. Crowned results are pangrams.`,
+        "success"
+      );
 
-          const heading = document.createElement("h3");
-          heading.className =
-            "mt-4 border-b pb-1 text-sm font-bold uppercase tracking-wider text-gray-400";
-          heading.textContent = `${currentLength}-Letter Words`;
-
-          currentGroup = document.createElement("div");
-          currentGroup.className = "mt-2 flex flex-wrap gap-2";
-
-          resultsContainer.appendChild(heading);
-          resultsContainer.appendChild(currentGroup);
-        }
-
-        const pangram = isPangram(word, letterSet);
-        const score = getWordScore(word, pangram);
-        const wordBadge = document.createElement("span");
-
-        wordBadge.className = pangram
-          ? "cursor-default rounded-lg border border-amber-300 bg-amber-100 px-3 py-1 text-sm font-bold text-amber-800 shadow-sm"
-          : "cursor-default rounded-lg bg-gray-100 px-3 py-1 text-sm text-gray-800 transition-colors hover:bg-gray-200";
-
-        wordBadge.textContent = pangram
-          ? `${word} 👑 Pangram · ${score} pts`
-          : `${word} · ${score} pt${score === 1 ? "" : "s"}`;
-
-        currentGroup.appendChild(wordBadge);
+      setActiveFilter("all");
+      renderResults();
+      document.getElementById("results-heading").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
       });
     }
 
-    const inputs = Array.from(document.querySelectorAll(".cell-input"));
+    function fillLetters(letters) {
+      inputs.forEach((input, index) => {
+        input.value = letters[index] || "";
+      });
+
+      quickEntry.value = letters.join("");
+      markCompleteInputs();
+      updateProgress();
+    }
+
+    function applyQuickEntry() {
+      const letters = sanitizeLetters(quickEntry.value);
+
+      quickEntry.value = letters;
+
+      if (!letters) {
+        showInputFeedback("Enter or paste letters before selecting Add.", "error");
+        quickEntry.focus();
+        return;
+      }
+
+      fillLetters(letters.split(""));
+
+      if (letters.length < 7) {
+        showInputFeedback(
+          `Added ${letters.length} letter${letters.length === 1 ? "" : "s"}. Add ${7 - letters.length} more to complete the hive.`,
+          "neutral"
+        );
+      } else {
+        showInputFeedback(
+          "Seven letters added. Select “Find Possible Words.”",
+          "success"
+        );
+        solveButton.focus();
+      }
+    }
+
+    function clearPuzzle() {
+      inputs.forEach((input) => {
+        input.value = "";
+      });
+
+      quickEntry.value = "";
+      latestResults = [];
+      clearInputStates();
+      updateProgress();
+
+      showInputFeedback(
+        "Start with the required center letter in the gold tile.",
+        "neutral"
+      );
+
+      displayWelcomeMessage();
+      document.getElementById("centerLetter").focus();
+    }
+
+    function loadExample() {
+      fillLetters(EXAMPLE_LETTERS);
+      showInputFeedback(
+        "Example hive added. Select “Find Possible Words.”",
+        "success"
+      );
+      solveButton.focus();
+    }
+
+    function handlePaste(event) {
+      const pastedText = sanitizeLetters(
+        event.clipboardData.getData("text")
+      );
+
+      if (pastedText.length < 2) {
+        return;
+      }
+
+      event.preventDefault();
+      fillLetters(pastedText.split(""));
+
+      if (pastedText.length === 7) {
+        showInputFeedback(
+          "Seven letters added. Select “Find Possible Words.”",
+          "success"
+        );
+        solveButton.focus();
+      } else {
+        showInputFeedback(
+          `Added ${pastedText.length} letters. Add ${7 - pastedText.length} more to complete the hive.`,
+          "neutral"
+        );
+      }
+    }
+
+    function getCopyText() {
+      const puzzle = getPuzzleData();
+      const letters = puzzle.letters.join(" ");
+      const visibleItems = latestResults.filter((item) => {
+        if (activeFilter === "all") return true;
+        if (activeFilter === "pangram") return item.pangram;
+        if (activeFilter === "7plus") return item.word.length >= 7;
+        return item.word.length === Number(activeFilter);
+      });
+
+      const words = visibleItems.map((item) => {
+        return item.pangram
+          ? `${item.word} (Pangram, ${item.score} pts)`
+          : `${item.word} (${item.score} pts)`;
+      });
+
+      return [
+        "Spelling Bee Solver",
+        `Letters: ${letters}`,
+        `Center letter: ${puzzle.centerLetter}`,
+        "",
+        ...words
+      ].join("\n");
+    }
+
+    async function copyResults() {
+      if (!latestResults.length) {
+        showToast("Search a hive before copying results.");
+        return;
+      }
+
+      try {
+        await navigator.clipboard.writeText(getCopyText());
+        showToast("Results copied to your clipboard.");
+      } catch (error) {
+        console.error(error);
+        showToast("Could not copy automatically. Try again in a supported browser.");
+      }
+    }
+
+    async function shareHive() {
+      const puzzle = getPuzzleData();
+
+      if (puzzle.letters.length !== 7) {
+        showToast("Complete the seven-letter hive before sharing.");
+        return;
+      }
+
+      const shareText = `My seven-letter hive: ${puzzle.letters.join(" ")}. Required center letter: ${puzzle.centerLetter}.`;
+
+      try {
+        if (navigator.share) {
+          await navigator.share({
+            title: "Spelling Bee Solver",
+            text: shareText,
+            url: window.location.href
+          });
+          return;
+        }
+
+        await navigator.clipboard.writeText(
+          `${shareText}\n${window.location.href}`
+        );
+        showToast("Hive details copied to your clipboard.");
+      } catch (error) {
+        if (error.name !== "AbortError") {
+          console.error(error);
+          showToast("Could not share the hive automatically.");
+        }
+      }
+    }
 
     inputs.forEach((input, index) => {
       input.addEventListener("input", (event) => {
         event.target.value = normalizeLetter(event.target.value);
 
+        const cell = getCell(event.target);
+        cell.classList.remove("input-error");
+        event.target.removeAttribute("aria-invalid");
+
+        quickEntry.value = inputs.map((item) => normalizeLetter(item.value)).join("");
+        updateProgress();
+
         if (event.target.value && index < inputs.length - 1) {
           inputs[index + 1].focus();
         }
       });
+
+      input.addEventListener("paste", handlePaste);
 
       input.addEventListener("keydown", (event) => {
         if (
@@ -674,25 +1525,49 @@
         ) {
           inputs[index - 1].focus();
         }
-
-        if (event.key === "Enter" && !solveButton.disabled) {
-          solvePuzzle();
-        }
       });
     });
 
-    solveButton.addEventListener("click", solvePuzzle);
+    quickEntry.addEventListener("input", () => {
+      quickEntry.value = sanitizeLetters(quickEntry.value);
+    });
+
+    quickEntry.addEventListener("keydown", (event) => {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        applyQuickEntry();
+      }
+    });
+
+    solverForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      solvePuzzle();
+    });
+
+    applyQuickEntryButton.addEventListener("click", applyQuickEntry);
+    clearButton.addEventListener("click", clearPuzzle);
+    exampleButton.addEventListener("click", loadExample);
+    copyResultsButton.addEventListener("click", copyResults);
+    shareHiveButton.addEventListener("click", shareHive);
+
+    document.querySelectorAll("[data-filter]").forEach((button) => {
+      button.addEventListener("click", () => {
+        setActiveFilter(button.dataset.filter);
+      });
+    });
 
     refreshDictionaryButton.addEventListener("click", () => {
       localStorage.removeItem(CACHE_KEY);
       localStorage.removeItem(CACHE_TIMESTAMP_KEY);
 
       masterDictionary = [];
-      displayMessage("Refreshing dictionary…");
+      latestResults = [];
+      displayResultsMessage("Refreshing the word dictionary…");
       loadGlobalDictionary(true);
     });
 
     window.addEventListener("DOMContentLoaded", () => {
+      updateProgress();
       loadGlobalDictionary();
     });
   </script>
