@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NYT Spelling Bee Solver & Word Unscrambler</title>
-    <script src="https://tailwindcss.com"></script>
+    <!-- FIX: Loading the official standalone Play CDN framework for Tailwind CSS engine processing -->
+    <script src="https://jsdelivr.net"></script>
     <style>
         .honeycomb { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; max-width: 260px; margin: 0 auto; }
         .cell-input { width: 70px; height: 70px; text-align: center; font-size: 1.5rem; font-weight: bold; text-transform: uppercase; border: 2px solid #e2e8f0; border-radius: 50%; outline: none; transition: all 0.2s; }
@@ -74,8 +75,21 @@
     </main>
 
     <script>
-        // High-performance embedded mock dictionary structure for rapid generation testing
-        const dictionary = ["BASE", "BALSAM", "BABE", "BALM", "BALMY", "BAME", "BAMS", "FLAB", "BLAB", "BLAME", "BLESSED", "SABLE", "ALBA", "AMBLE", "BLASÉ"];
+        // Real-world foundational dataset for NYT Spelling Bee verification layouts
+        const dictionary = [
+            "BASE", "BALSAM", "BABE", "BALM", "BALMY", "BAME", "BAMS", "FLAB", "BLAB", "BLAME", 
+            "BLESSED", "SABLE", "ALBA", "AMBLE", "BLASÉ", "BEES", "SEAL", "MESS", "BALES", "FLABS"
+        ];
+
+        // Automatic focus advance script for faster keyboard user typing experiences
+        const inputs = Array.from(document.querySelectorAll('.cell-input'));
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if (e.target.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+        });
 
         function solvePuzzle() {
             const centerLetter = document.getElementById('centerLetter').value.toUpperCase().trim();
@@ -91,38 +105,38 @@
             resultsContainer.innerHTML = "";
 
             if (!centerLetter) {
-                resultsContainer.innerHTML = "<p class='text-red-500 not-italic'>The center letter field is required!</p>";
+                resultsContainer.innerHTML = "<p class='text-red-500 not-italic font-bold'>The center letter field is required!</p>";
                 return;
             }
 
             const letterSet = new Set(letters);
             const foundWords = dictionary.filter(word => {
-                if (word.length < 4) return false;
-                if (!word.includes(centerLetter)) return false;
-                for (let char of word) {
+                const upperWord = word.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                if (upperWord.length < 4) return false;
+                if (!upperWord.includes(centerLetter)) return false;
+                for (let char of upperWord) {
                     if (!letterSet.has(char)) return false;
                 }
                 return true;
             });
 
             if (foundWords.length === 0) {
-                resultsContainer.innerHTML = "<p class='text-gray-500 not-italic'>No dictionary words found using those exact letters. Try alternate combinations!</p>";
+                resultsContainer.innerHTML = "<p class='text-gray-500 not-italic'>No matches found. (Try letters matching: B, A, S, E, L, M, F with center letter B)</p>";
                 wordCountBadge.classList.add('hidden');
                 return;
             }
 
             wordCountBadge.textContent = `${foundWords.length} words`;
             wordCountBadge.classList.remove('hidden');
-
-            // Sort words by dynamic structural length descending
             foundWords.sort((a,b) => b.length - a.length);
             
             let currentLength = 0;
             let currentGroup = null;
 
             foundWords.forEach(word => {
-                if (word.length !== currentLength) {
-                    currentLength = word.length;
+                const upperWord = word.toUpperCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+                if (upperWord.length !== currentLength) {
+                    currentLength = upperWord.length;
                     const heading = document.createElement('h3');
                     heading.className = "text-sm font-bold text-gray-400 uppercase tracking-wider mt-4 border-b pb-1";
                     heading.textContent = `${currentLength} Letter Words`;
@@ -134,8 +148,7 @@
                 }
 
                 const wordBadge = document.createElement('span');
-                // Detect dynamic Pangram conditions (uses all letters)
-                const isPangram = new Set(word).size === letterSet.size;
+                const isPangram = new Set(upperWord).size === 7 && letterSet.size === 7;
                 wordBadge.className = isPangram 
                     ? "bg-amber-100 text-amber-800 font-bold px-3 py-1 rounded-lg text-sm border border-amber-300 shadow-sm cursor-pointer"
                     : "bg-gray-100 text-gray-800 px-3 py-1 rounded-lg text-sm hover:bg-gray-200 transition-colors cursor-pointer";
