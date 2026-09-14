@@ -12,6 +12,7 @@
     name="google-site-verification"
     content="-s3MAawSQTI8ztB_VpEPKbIjnNllaN5OuV04C89_buA"
   />
+
   <link rel="canonical" href="https://spelling-bee-solver-pro.netlify.app/" />
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
 
@@ -43,8 +44,16 @@
     body {
       min-width: 320px;
       background:
-        radial-gradient(circle at 10% 0%, rgba(255, 211, 102, 0.18), transparent 28rem),
-        radial-gradient(circle at 100% 16%, rgba(255, 237, 188, 0.55), transparent 32rem),
+        radial-gradient(
+          circle at 10% 0%,
+          rgba(255, 211, 102, 0.18),
+          transparent 28rem
+        ),
+        radial-gradient(
+          circle at 100% 16%,
+          rgba(255, 237, 188, 0.55),
+          transparent 32rem
+        ),
         var(--cream);
     }
 
@@ -54,7 +63,14 @@
       height: 44px;
       place-items: center;
       background: linear-gradient(145deg, #ffdc77, #e99f1b);
-      clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0 50%);
+      clip-path: polygon(
+        25% 6.7%,
+        75% 6.7%,
+        100% 50%,
+        75% 93.3%,
+        25% 93.3%,
+        0 50%
+      );
       box-shadow: 0 6px 16px rgba(199, 122, 10, 0.25);
     }
 
@@ -125,9 +141,20 @@
       inset: 0;
       border: 2px solid #ddcda8;
       background: linear-gradient(145deg, #fffefa, #fff6df);
-      clip-path: polygon(25% 6.7%, 75% 6.7%, 100% 50%, 75% 93.3%, 25% 93.3%, 0 50%);
+      clip-path: polygon(
+        25% 6.7%,
+        75% 6.7%,
+        100% 50%,
+        75% 93.3%,
+        25% 93.3%,
+        0 50%
+      );
       box-shadow: 0 5px 0 rgba(193, 165, 105, 0.22);
-      transition: transform 0.16s ease, border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+      transition:
+        transform 0.16s ease,
+        border-color 0.16s ease,
+        box-shadow 0.16s ease,
+        background 0.16s ease;
     }
 
     .hive-cell:hover .hex-shape {
@@ -137,7 +164,9 @@
 
     .hive-cell:focus-within .hex-shape {
       border-color: var(--honey-dark);
-      box-shadow: 0 0 0 4px rgba(246, 181, 46, 0.25), 0 7px 0 rgba(193, 165, 105, 0.22);
+      box-shadow:
+        0 0 0 4px rgba(246, 181, 46, 0.25),
+        0 7px 0 rgba(193, 165, 105, 0.22);
       transform: translateY(-2px);
     }
 
@@ -207,7 +236,10 @@
       color: #273247;
       font-size: 0.84rem;
       font-weight: 800;
-      transition: transform 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+      transition:
+        transform 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
     }
 
     .word-chip:hover {
@@ -303,7 +335,9 @@
       opacity: 0;
       pointer-events: none;
       transform: translateY(16px);
-      transition: opacity 0.2s ease, transform 0.2s ease;
+      transition:
+        opacity 0.2s ease,
+        transform 0.2s ease;
     }
 
     .toast.visible {
@@ -346,13 +380,18 @@
 <body class="flex min-h-screen flex-col text-slate-800">
   <header class="border-b border-amber-100 bg-white/90 backdrop-blur">
     <div class="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
-      <a href="/" class="flex items-center gap-3" aria-label="Spelling Bee Solver home">
+      <a
+        href="/"
+        class="flex items-center gap-3"
+        aria-label="Spelling Bee Solver home"
+      >
         <span class="brand-mark text-lg" aria-hidden="true">🐝</span>
 
         <span>
           <span class="block text-lg font-black tracking-tight text-slate-900">
             Spelling Bee Solver
           </span>
+
           <span class="block text-xs font-semibold text-slate-500">
             Find possible words, pangrams, and scores
           </span>
@@ -408,12 +447,19 @@
                 Your puzzle
               </p>
 
-              <h2 id="solver-heading" class="mt-1 text-2xl font-black tracking-tight text-slate-900">
+              <h2
+                id="solver-heading"
+                class="mt-1 text-2xl font-black tracking-tight text-slate-900"
+              >
                 Build the hive
               </h2>
 
-              <p id="letterHelp" class="mt-2 text-sm leading-relaxed text-slate-600">
-                Use seven different letters. The gold center tile is required in every result.
+              <p
+                id="letterHelp"
+                class="mt-2 text-sm leading-relaxed text-slate-600"
+              >
+                Use seven different letters. The gold center tile is required in
+                every result.
               </p>
             </div>
 
@@ -426,13 +472,19 @@
           </div>
 
           <div class="mt-5">
-            <div class="h-2 overflow-hidden rounded-full bg-slate-100" aria-hidden="true">
+            <div
+              class="h-2 overflow-hidden rounded-full bg-slate-100"
+              aria-hidden="true"
+            >
               <div id="letterProgressFill" class="progress-fill w-0"></div>
             </div>
           </div>
 
           <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50/70 p-3">
-            <label for="quickEntry" class="block text-xs font-black uppercase tracking-[0.12em] text-amber-900">
+            <label
+              for="quickEntry"
+              class="block text-xs font-black uppercase tracking-[0.12em] text-amber-900"
+            >
               Fast entry
             </label>
 
@@ -458,7 +510,10 @@
               </button>
             </div>
 
-            <p id="quickEntryHelp" class="mt-2 text-xs leading-relaxed text-amber-900">
+            <p
+              id="quickEntryHelp"
+              class="mt-2 text-xs leading-relaxed text-amber-900"
+            >
               Order: outer, outer, center, outer, outer, outer, outer.
             </p>
           </div>
@@ -473,44 +528,118 @@
                 <div class="hive-cell">
                   <span class="hex-shape" aria-hidden="true"></span>
                   <label class="sr-only" for="letter1">Outer letter 1</label>
-                  <input id="letter1" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="A" aria-label="Outer letter 1" />
+                  <input
+                    id="letter1"
+                    class="hex-input outer-letter"
+                    type="text"
+                    maxlength="1"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    placeholder="A"
+                    aria-label="Outer letter 1"
+                  />
                 </div>
 
                 <div class="hive-cell">
                   <span class="hex-shape" aria-hidden="true"></span>
                   <label class="sr-only" for="letter2">Outer letter 2</label>
-                  <input id="letter2" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="B" aria-label="Outer letter 2" />
+                  <input
+                    id="letter2"
+                    class="hex-input outer-letter"
+                    type="text"
+                    maxlength="1"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    placeholder="B"
+                    aria-label="Outer letter 2"
+                  />
                 </div>
 
                 <div class="hive-cell center">
                   <span class="hex-shape" aria-hidden="true"></span>
-                  <label class="sr-only" for="centerLetter">Required center letter</label>
-                  <input id="centerLetter" class="hex-input" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="★" aria-label="Required center letter" aria-required="true" required />
+                  <label class="sr-only" for="centerLetter">
+                    Required center letter
+                  </label>
+                  <input
+                    id="centerLetter"
+                    class="hex-input"
+                    type="text"
+                    maxlength="1"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    placeholder="★"
+                    aria-label="Required center letter"
+                    aria-required="true"
+                    required
+                  />
                   <span class="center-label" aria-hidden="true">REQUIRED</span>
                 </div>
 
                 <div class="hive-cell">
                   <span class="hex-shape" aria-hidden="true"></span>
                   <label class="sr-only" for="letter3">Outer letter 3</label>
-                  <input id="letter3" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="C" aria-label="Outer letter 3" />
+                  <input
+                    id="letter3"
+                    class="hex-input outer-letter"
+                    type="text"
+                    maxlength="1"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    placeholder="C"
+                    aria-label="Outer letter 3"
+                  />
                 </div>
 
                 <div class="hive-cell">
                   <span class="hex-shape" aria-hidden="true"></span>
                   <label class="sr-only" for="letter4">Outer letter 4</label>
-                  <input id="letter4" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="D" aria-label="Outer letter 4" />
+                  <input
+                    id="letter4"
+                    class="hex-input outer-letter"
+                    type="text"
+                    maxlength="1"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    placeholder="D"
+                    aria-label="Outer letter 4"
+                  />
                 </div>
 
                 <div class="hive-cell">
                   <span class="hex-shape" aria-hidden="true"></span>
                   <label class="sr-only" for="letter5">Outer letter 5</label>
-                  <input id="letter5" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="E" aria-label="Outer letter 5" />
+                  <input
+                    id="letter5"
+                    class="hex-input outer-letter"
+                    type="text"
+                    maxlength="1"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    placeholder="E"
+                    aria-label="Outer letter 5"
+                  />
                 </div>
 
                 <div class="hive-cell">
                   <span class="hex-shape" aria-hidden="true"></span>
                   <label class="sr-only" for="letter6">Outer letter 6</label>
-                  <input id="letter6" class="hex-input outer-letter" type="text" maxlength="1" inputmode="text" autocomplete="off" autocapitalize="characters" placeholder="F" aria-label="Outer letter 6" />
+                  <input
+                    id="letter6"
+                    class="hex-input outer-letter"
+                    type="text"
+                    maxlength="1"
+                    inputmode="text"
+                    autocomplete="off"
+                    autocapitalize="characters"
+                    placeholder="F"
+                    aria-label="Outer letter 6"
+                  />
                 </div>
               </div>
             </fieldset>
@@ -574,31 +703,95 @@
                     Results
                   </p>
 
-                  <h2 id="results-heading" class="mt-1 text-2xl font-black tracking-tight text-slate-900">
+                  <h2
+                    id="results-heading"
+                    class="mt-1 text-2xl font-black tracking-tight text-slate-900"
+                  >
                     Possible words
                   </h2>
 
-                  <p id="searchSummary" class="mt-2 text-sm leading-relaxed text-slate-600">
+                  <p
+                    id="searchSummary"
+                    class="mt-2 text-sm leading-relaxed text-slate-600"
+                  >
                     Add a complete hive to see results.
                   </p>
                 </div>
 
                 <div class="flex flex-wrap gap-2">
-                  <span id="wordCount" class="hidden rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-black text-slate-700 shadow-sm">0 words</span>
-                  <span id="pangramCount" class="hidden rounded-full border border-amber-200 bg-amber-100 px-3 py-1.5 text-sm font-black text-amber-900 shadow-sm">0 pangrams</span>
-                  <span id="scoreTotal" class="hidden rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-black text-emerald-800 shadow-sm">0 points</span>
+                  <span
+                    id="wordCount"
+                    class="hidden rounded-full border border-slate-200 bg-white px-3 py-1.5 text-sm font-black text-slate-700 shadow-sm"
+                  >
+                    0 words
+                  </span>
+
+                  <span
+                    id="pangramCount"
+                    class="hidden rounded-full border border-amber-200 bg-amber-100 px-3 py-1.5 text-sm font-black text-amber-900 shadow-sm"
+                  >
+                    0 pangrams
+                  </span>
+
+                  <span
+                    id="scoreTotal"
+                    class="hidden rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-sm font-black text-emerald-800 shadow-sm"
+                  >
+                    0 points
+                  </span>
                 </div>
               </div>
 
               <div id="resultsToolbar" class="hidden border-t border-amber-100 pt-4">
                 <div class="flex flex-col justify-between gap-3 lg:flex-row lg:items-center">
                   <div class="flex flex-wrap gap-2" aria-label="Result filters">
-                    <button type="button" class="filter-chip active" data-filter="all">All</button>
-                    <button type="button" class="filter-chip" data-filter="pangram">👑 Pangrams</button>
-                    <button type="button" class="filter-chip" data-filter="4">4 letters</button>
-                    <button type="button" class="filter-chip" data-filter="5">5 letters</button>
-                    <button type="button" class="filter-chip" data-filter="6">6 letters</button>
-                    <button type="button" class="filter-chip" data-filter="7plus">7+ letters</button>
+                    <button
+                      type="button"
+                      class="filter-chip active"
+                      data-filter="all"
+                    >
+                      All
+                    </button>
+
+                    <button
+                      type="button"
+                      class="filter-chip"
+                      data-filter="pangram"
+                    >
+                      👑 Pangrams
+                    </button>
+
+                    <button
+                      type="button"
+                      class="filter-chip"
+                      data-filter="4"
+                    >
+                      4 letters
+                    </button>
+
+                    <button
+                      type="button"
+                      class="filter-chip"
+                      data-filter="5"
+                    >
+                      5 letters
+                    </button>
+
+                    <button
+                      type="button"
+                      class="filter-chip"
+                      data-filter="6"
+                    >
+                      6 letters
+                    </button>
+
+                    <button
+                      type="button"
+                      class="filter-chip"
+                      data-filter="7plus"
+                    >
+                      7+ letters
+                    </button>
                   </div>
 
                   <div class="flex gap-2">
@@ -629,15 +822,22 @@
             aria-live="polite"
           >
             <div class="flex min-h-[400px] flex-col items-center justify-center text-center">
-              <div class="grid h-20 w-20 place-items-center rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100 text-4xl shadow-sm" aria-hidden="true">
+              <div
+                class="grid h-20 w-20 place-items-center rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-amber-100 text-4xl shadow-sm"
+                aria-hidden="true"
+              >
                 🐝
               </div>
 
-              <h3 class="mt-5 text-xl font-black text-slate-800">Ready to search.</h3>
+              <h3 class="mt-5 text-xl font-black text-slate-800">
+                Ready to search.
+              </h3>
 
               <p class="mt-2 max-w-sm text-sm leading-relaxed text-slate-500">
                 Add your hive letters, then choose
-                <strong class="font-bold text-slate-700">Find Possible Words</strong>.
+                <strong class="font-bold text-slate-700">
+                  Find Possible Words
+                </strong>.
               </p>
 
               <button
@@ -652,7 +852,8 @@
 
           <div class="border-t border-amber-100 bg-[#fffdf8] px-5 py-3 text-xs leading-relaxed text-slate-500 sm:px-7">
             <span class="font-bold text-slate-700">Dictionary note:</span>
-            These are possible matches from a general English dictionary, not an official publisher-specific answer list.
+            These are possible matches from a general English dictionary, not an
+            official publisher-specific answer list.
           </div>
         </section>
       </div>
@@ -663,30 +864,46 @@
     <div class="mx-auto max-w-6xl">
       <div class="grid gap-7 md:grid-cols-3">
         <section>
-          <h2 class="font-black text-slate-900">Fast browser-based solver</h2>
+          <h2 class="font-black text-slate-900">
+            Fast browser-based solver
+          </h2>
+
           <p class="mt-2 leading-relaxed">
-            Your puzzle letters are processed in your browser. A saved dictionary can make future visits faster.
+            Your puzzle letters are processed in your browser. A saved dictionary
+            can make future visits faster.
           </p>
         </section>
 
         <section>
-          <h2 class="font-black text-slate-900">Pangrams and score</h2>
+          <h2 class="font-black text-slate-900">
+            Pangrams and score
+          </h2>
+
           <p class="mt-2 leading-relaxed">
-            Crowned words use all seven letters. Scores are estimates based on a common Spelling Bee-style convention.
+            Crowned words use all seven letters. Scores are estimates based on a
+            common Spelling Bee-style convention.
           </p>
         </section>
 
         <section>
-          <h2 class="font-black text-slate-900">Need help?</h2>
+          <h2 class="font-black text-slate-900">
+            Need help?
+          </h2>
+
           <p class="mt-2 leading-relaxed">
-            Start with the gold center letter, add six unique outer letters, and search for possible matches.
+            Start with the gold center letter, add six unique outer letters, and
+            search for possible matches.
           </p>
         </section>
       </div>
 
       <div class="mt-8 flex flex-wrap items-center justify-between gap-3 border-t border-amber-100 pt-6 text-xs text-slate-500">
         <span>© 2026 By Cash Marketing</span>
-        <a href="privacy.html" class="font-bold text-slate-600 transition hover:text-amber-700 hover:underline">
+
+        <a
+          href="privacy.html"
+          class="font-bold text-slate-600 transition hover:text-amber-700 hover:underline"
+        >
           Privacy Policy
         </a>
       </div>
@@ -715,12 +932,20 @@
     const solveButton = document.getElementById("solveBtn");
     const clearButton = document.getElementById("clearBtn");
     const exampleButton = document.getElementById("exampleBtn");
-    const refreshDictionaryButton = document.getElementById("refreshDictionaryBtn");
+    const refreshDictionaryButton = document.getElementById(
+      "refreshDictionaryBtn"
+    );
     const quickEntry = document.getElementById("quickEntry");
-    const applyQuickEntryButton = document.getElementById("applyQuickEntryBtn");
+    const applyQuickEntryButton = document.getElementById(
+      "applyQuickEntryBtn"
+    );
     const inputFeedback = document.getElementById("inputFeedback");
-    const letterProgressText = document.getElementById("letterProgressText");
-    const letterProgressFill = document.getElementById("letterProgressFill");
+    const letterProgressText = document.getElementById(
+      "letterProgressText"
+    );
+    const letterProgressFill = document.getElementById(
+      "letterProgressFill"
+    );
     const resultsContainer = document.getElementById("resultsContainer");
     const resultsToolbar = document.getElementById("resultsToolbar");
     const wordCountBadge = document.getElementById("wordCount");
@@ -793,6 +1018,7 @@
       refreshDictionaryButton.disabled = isLoading;
       refreshDictionaryButton.classList.toggle("opacity-50", isLoading);
       refreshDictionaryButton.classList.toggle("cursor-not-allowed", isLoading);
+
       refreshDictionaryButton.textContent = isLoading
         ? "Refreshing dictionary…"
         : "↻ Refresh word dictionary";
@@ -934,6 +1160,7 @@
 
         const cachedData = localStorage.getItem(CACHE_KEY);
         const cachedTime = localStorage.getItem(CACHE_TIMESTAMP_KEY);
+
         const cacheAge = cachedTime
           ? Date.now() - Number(cachedTime)
           : Infinity;
@@ -1041,7 +1268,9 @@
 
     function getPuzzleData() {
       const centerInput = document.getElementById("centerLetter");
-      const outerInputs = Array.from(document.querySelectorAll(".outer-letter"));
+      const outerInputs = Array.from(
+        document.querySelectorAll(".outer-letter")
+      );
       const centerLetter = normalizeLetter(centerInput.value);
       const outerLetters = outerInputs
         .map((input) => normalizeLetter(input.value))
@@ -1173,9 +1402,11 @@
           </div>
         `;
 
-        document.getElementById("resetFilterBtn").addEventListener("click", () => {
-          setActiveFilter("all");
-        });
+        document
+          .getElementById("resetFilterBtn")
+          .addEventListener("click", () => {
+            setActiveFilter("all");
+          });
 
         return;
       }
@@ -1190,6 +1421,7 @@
           const heading = document.createElement("h3");
           heading.className =
             "mt-7 flex items-center gap-3 text-sm font-black uppercase tracking-[0.14em] text-slate-500";
+
           heading.innerHTML = `
             <span>${currentLength}-letter words</span>
             <span class="h-px flex-grow bg-amber-100"></span>
@@ -1203,7 +1435,11 @@
         }
 
         const wordBadge = document.createElement("span");
-        wordBadge.className = item.pangram ? "word-chip pangram" : "word-chip";
+
+        wordBadge.className = item.pangram
+          ? "word-chip pangram"
+          : "word-chip";
+
         wordBadge.dataset.length = item.word.length;
         wordBadge.dataset.pangram = item.pangram ? "true" : "false";
 
@@ -1295,6 +1531,7 @@
       activeFilter = "all";
 
       const pangramWords = latestResults.filter((item) => item.pangram);
+
       const totalScore = latestResults.reduce(
         (total, item) => total + item.score,
         0
@@ -1318,7 +1555,9 @@
       resultsToolbar.classList.remove("hidden");
 
       searchSummary.innerHTML = `
-        Searching with <strong class="font-black text-slate-800">${letters.join(" · ")}</strong>
+        Searching with <strong class="font-black text-slate-800">${letters.join(
+          " · "
+        )}</strong>
         — center letter: <strong class="font-black text-amber-800">${centerLetter}</strong>.
       `;
 
@@ -1329,6 +1568,7 @@
 
       setActiveFilter("all");
       renderResults();
+
       document.getElementById("results-heading").scrollIntoView({
         behavior: "smooth",
         block: "start"
@@ -1351,7 +1591,10 @@
       quickEntry.value = letters;
 
       if (!letters) {
-        showInputFeedback("Enter or paste letters before selecting Add.", "error");
+        showInputFeedback(
+          "Enter or paste letters before selecting Add.",
+          "error"
+        );
         quickEntry.focus();
         return;
       }
@@ -1360,7 +1603,9 @@
 
       if (letters.length < 7) {
         showInputFeedback(
-          `Added ${letters.length} letter${letters.length === 1 ? "" : "s"}. Add ${7 - letters.length} more to complete the hive.`,
+          `Added ${letters.length} letter${
+            letters.length === 1 ? "" : "s"
+          }. Add ${7 - letters.length} more to complete the hive.`,
           "neutral"
         );
       } else {
@@ -1393,10 +1638,12 @@
 
     function loadExample() {
       fillLetters(EXAMPLE_LETTERS);
+
       showInputFeedback(
         "Example hive added. Select “Find Possible Words.”",
         "success"
       );
+
       solveButton.focus();
     }
 
@@ -1420,7 +1667,9 @@
         solveButton.focus();
       } else {
         showInputFeedback(
-          `Added ${pastedText.length} letters. Add ${7 - pastedText.length} more to complete the hive.`,
+          `Added ${pastedText.length} letters. Add ${
+            7 - pastedText.length
+          } more to complete the hive.`,
           "neutral"
         );
       }
@@ -1429,10 +1678,20 @@
     function getCopyText() {
       const puzzle = getPuzzleData();
       const letters = puzzle.letters.join(" ");
+
       const visibleItems = latestResults.filter((item) => {
-        if (activeFilter === "all") return true;
-        if (activeFilter === "pangram") return item.pangram;
-        if (activeFilter === "7plus") return item.word.length >= 7;
+        if (activeFilter === "all") {
+          return true;
+        }
+
+        if (activeFilter === "pangram") {
+          return item.pangram;
+        }
+
+        if (activeFilter === "7plus") {
+          return item.word.length >= 7;
+        }
+
         return item.word.length === Number(activeFilter);
       });
 
@@ -1462,7 +1721,9 @@
         showToast("Results copied to your clipboard.");
       } catch (error) {
         console.error(error);
-        showToast("Could not copy automatically. Try again in a supported browser.");
+        showToast(
+          "Could not copy automatically. Try again in a supported browser."
+        );
       }
     }
 
@@ -1474,7 +1735,9 @@
         return;
       }
 
-      const shareText = `My seven-letter hive: ${puzzle.letters.join(" ")}. Required center letter: ${puzzle.centerLetter}.`;
+      const shareText = `My seven-letter hive: ${puzzle.letters.join(
+        " "
+      )}. Required center letter: ${puzzle.centerLetter}.`;
 
       try {
         if (navigator.share) {
@@ -1483,12 +1746,14 @@
             text: shareText,
             url: window.location.href
           });
+
           return;
         }
 
         await navigator.clipboard.writeText(
           `${shareText}\n${window.location.href}`
         );
+
         showToast("Hive details copied to your clipboard.");
       } catch (error) {
         if (error.name !== "AbortError") {
@@ -1503,10 +1768,14 @@
         event.target.value = normalizeLetter(event.target.value);
 
         const cell = getCell(event.target);
+
         cell.classList.remove("input-error");
         event.target.removeAttribute("aria-invalid");
 
-        quickEntry.value = inputs.map((item) => normalizeLetter(item.value)).join("");
+        quickEntry.value = inputs
+          .map((item) => normalizeLetter(item.value))
+          .join("");
+
         updateProgress();
 
         if (event.target.value && index < inputs.length - 1) {
